@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phòng Thí Nghiệm Ảo - Mô Phỏng Tương Tác Vật Lý & Sinh Học</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #0f1115;
+    color: #e6eef7;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #intro-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: black;
+  }
+  #intro-skip {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 2010;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
+  #intro-hint {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    z-index: 2010;
+    background: rgba(0,0,0,0.35);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    backdrop-filter: blur(4px);
+  }
+  .fade-out {
+    animation: fadeOut 0.6s forwards;
+  }
+  @keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  .app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #0f1115;
+  }
+  .left-panel {
+    width: 60px;
+    background-color: #141821;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 15px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+    z-index: 20;
+  }
+  
+  .top-nav {
+    display: flex;
+    background-color: #1b2130;
+    padding: 10px 20px;
+    gap: 15px;
+    border-bottom: 1px solid #2a3040;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropbtn {
+    background-color: #2a3040;
+    color: #e6eef7;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 120px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #2a3040;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .dropdown-content a {
+    color: #e6eef7;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #3a4050;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown:hover .dropbtn {
+    background-color: #3a4050;
+  }
+  .nav-btn {
+    width: 46px;
+    height: 46px;
+    background: #1b2130;
+    color: #cfe6ff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .nav-btn:hover {
+    background: #2998ff33;
+    color: #2998ff;
+    transform: translateY(-2px);
+  }
+  .nav-btn.active {
+    background: #2998ff33;
+    color: #2998ff;
+    box-shadow: inset 0 0 0 2px #2998ff;
+  }
+
+  .main-section {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: #0e1320;
+  }
+
+  .top-toolbar {
+    height: 56px;
+    background: #141821;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .tool-btn {
+    background: #1b2130;
+    color: #cfe6ff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .tool-btn:hover {
+    background: #2998ff33;
+    color: #2998ff;
+  }
+  .tool-btn.active {
+    background: #2998ff33;
+    color: #2998ff;
+  }
+  .tool-btn i {
+    font-size: 1.1em;
+  }
+
+  .viewport-container {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    background: #0e1320;
+  }
+  #viewCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  #vr-container {
+    display: none;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+  }
+  .vr-viewport {
+    width: 50%;
+    height: 100%;
+    float: left;
+  }
+
+  .right-panel {
+    width: 300px;
+    background: #141821;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+    z-index: 20;
+  }
+  .panel-title {
+    margin-top: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333a4d;
+    font-size: 1.1em;
+    color: #2998ff;
+  }
+  .panel-section {
+    margin-bottom: 25px;
+  }
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #333a4d;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity .2s;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2998ff;
+    cursor: pointer;
+  }
+  input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #2998ff;
+  }
+  .panel-section div {
+    margin-bottom: 8px;
+  }
+
+  .footer-status-bar {
+    height: 30px;
+    background: #141821;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 0.8em;
+    color: #b0c4de;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+  }
+  .popup-content {
+    background-color: #1a1e27;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    position: relative;
+    color: #e6eef7;
+    animation: fadeIn 0.3s ease-out;
+  }
+  .popup-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    color: #b0c4de;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  .popup-close-btn:hover {
+    color: #2998ff;
+  }
+  .popup-content h2 {
+    color: #2998ff;
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #333a4d;
+    padding-bottom: 10px;
+  }
+  .popup-content h3 {
+    color: #cfe6ff;
+    font-size: 1.3em;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #333a4d;
+    padding-bottom: 5px;
+  }
+  .popup-content p, .popup-content ul {
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .popup-content ul {
+    padding-left: 20px;
+  }
+  .popup-content ul li {
+    margin-bottom: 5px;
+  }
+
+  #physics-panel {
+    display: none;
+    color: #e6eef7;
+  }
+  #physics-panel h3 {
+    margin-top: 0;
+    color: #7ad0ff;
+  }
+  #physics-panel label {
+    display:block;
+    font-size: 0.95em;
+    margin-top:8px;
+    color:#cfe6ff;
+  }
+  #physics-panel input {
+    width:100%;
+    padding:6px;
+    border-radius:6px;
+    border:1px solid #333a4d;
+    background:#0f1318;
+    color:#e6eef7;
+    margin-top:6px;
+  }
+  #physics-panel button {
+    margin-top:10px;
+    background:#2998ff;
+    border:none;
+    color:#012;
+    padding:8px 10px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  @media (max-width: 992px) {
+    .right-panel {
+      width: 250px;
+    }
+    .top-toolbar {
+      padding: 0 8px;
+      gap: 8px;
+    }
+    .tool-btn {
+      padding: 6px 10px;
+      font-size: 0.85em;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .app-container {
+      flex-direction: column;
+      gap: 0;
+    }
+    .left-panel {
+      width: 100%;
+      height: 60px;
+      flex-direction: row;
+      padding: 0 10px;
+      justify-content: space-around;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .left-panel .nav-btn {
+      margin: 0;
+    }
+    .main-section {
+      flex-grow: 1;
+    }
+    .top-toolbar {
+      height: auto;
+      flex-wrap: wrap;
+      padding: 5px;
+      gap: 5px;
+      justify-content: center;
+    }
+    .top-toolbar .tool-btn {
+      flex-grow: 1;
+      text-align: center;
+    }
+    .right-panel {
+      width: 100%;
+      height: 300px;
+      max-height: 40vh;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .footer-status-bar {
+      display: none;
+    }
+    .popup-content {
+      width: 95%;
+      padding: 15px;
+    }
+    .popup-content h2 {
+      font-size: 1.5em;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div id="intro-overlay" aria-hidden="false">
+  <video id="intro-video" playsinline autoplay muted>
+    <source src="intro.mp4" type="video/mp4">
+    Trình duyệt không hỗ trợ video. Vui lòng mở file intro.mp4 bên ngoài.
+  </video>
+  <button id="intro-skip">Bỏ qua (Esc)</button>
+  <div id="intro-hint">Nhấn vào màn hình để bật âm thanh (nếu cần)</div>
+</div>
+
+<div class="app-container" id="app-root" style="visibility:hidden;">
+  <div class="left-panel">
+    <button class="nav-btn" data-mode="settings" title="Cài đặt"><i class="fa-solid fa-gear"></i></button>
+    <button class="nav-btn" id="help-btn" title="Hướng dẫn"><i class="fa-solid fa-circle-question"></i></button>
+  </div>
+
+  <div class="main-section">
+    <div class="top-nav">
+      <div class="dropdown">
+        <button class="dropbtn">Vật lý <i class="fa fa-caret-down"></i></button>
+        <div class="dropdown-content">
+          <a href="#" data-physics="potential">Thế năng</a>
+          <a href="#" data-physics="kinetic">Động năng</a>
+          <a href="#" data-physics="projectile">Ném xiên</a>
+          <a href="#" data-physics="horizontal">Ném ngang</a>
+          <a href="#" data-physics="pulley">Ròng rọc</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="dropbtn">Sinh học <i class="fa fa-caret-down"></i></button>
+        <div class="dropdown-content">
+          <a href="#" data-anatomy="brain">Mô hình não bộ</a>
+          <a href="#" data-anatomy="heart">Mô hình tim</a>
+          <a href="#" data-anatomy="body">Mô hình cơ thể</a>
+          <a href="#" data-anatomy="lung">Mô hình phổi</a>
+          <a href="#" data-anatomy="bacteria">Mô hình vi khuẩn</a>
+        </div>
+      </div>
+      <button id="brain-model-btn" class="tool-btn" title="Mô hình não bộ">1</button>
+      <div style="flex-grow: 1;"></div>
+    </div>
+
+    <div class="viewport-container" id="default-viewport">
+      <canvas id="viewCanvas"></canvas>
+    </div>
+    
+    <div id="vr-container">
+        <canvas id="vrCanvasLeft" class="vr-viewport"></canvas>
+        <canvas id="vrCanvasRight" class="vr-viewport"></canvas>
+    </div>
+
+    <div class="footer-status-bar">
+      <span id="status-mode">Trạng thái: Sẵn sàng</span>
+      <span id="status-tool">Công cụ: Di chuyển</span>
+      <span id="status-fps">FPS: --</span>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div id="model-panel">
+      <div class="panel-section">
+        <h3 class="panel-title">Thuộc tính mô hình</h3>
+        <label class="slider-label">
+          <span>Độ trong suốt:</span>
+          <span id="opacityVal">100%</span>
+        </label>
+        <input type="range" id="rngOpacity" min="0" max="100" value="100" style="width: 100%;"/>
+      </div>
+
+      <div class="panel-section" id="brain-controls">
+        <h3 class="panel-title">Hiển thị lớp</h3>
+        <div><input type="checkbox" checked data-part="cortex" data-model="brain"/> Vỏ não</div>
+        <div><input type="checkbox" checked data-part="cerebellum" data-model="brain"/> Tiểu não</div>
+        <div><input type="checkbox" data-part="brainstem" data-model="brain"/> Thân não</div>
+      </div>
+      
+      <div class="panel-section" id="heart-controls" style="display: none;">
+        <h3 class="panel-title">Hiển thị tim</h3>
+        <div><input type="checkbox" checked data-part="atria" data-model="heart"/> Tâm nhĩ</div>
+        <div><input type="checkbox" checked data-part="ventricles" data-model="heart"/> Tâm thất</div>
+        <div><input type="checkbox" checked data-part="vessels" data-model="heart"/> Mạch máu</div>
+      </div>
+      
+      <div class="panel-section" id="lung-controls" style="display: none;">
+        <h3 class="panel-title">Hiển thị phổi</h3>
+        <div><input type="checkbox" checked data-part="left" data-model="lung"/> Phổi trái</div>
+        <div><input type="checkbox" checked data-part="right" data-model="lung"/> Phổi phải</div>
+        <div><input type="checkbox" checked data-part="bronchi" data-model="lung"/> Phế quản</div>
+      </div>
+    </div>
+
+    <div id="physics-panel" style="display: none;">
+      <h3>Thí Nghiệm Vật Lý Tương Tác</h3>
+      <p class="panel-subtitle">Khám phá các hiện tượng vật lý thông qua mô phỏng trực quan</p>
+
+      <div id="potential-section" class="panel-section">
+        <div class="section-title">Bài 1: Thế năng</div>
+        <p class="section-description">Khám phá thế năng thông qua thí nghiệm thả vật thể</p>
+        <label>Chiều cao (m): <input id="p_height" type="number" value="5" step="0.1"/></label>
+        <label>Khối lượng (kg): <input id="p_mass" type="number" value="2" step="0.1"/></label>
+        <label>Gia tốc trọng trường (m/s²): <input id="p_g" type="number" value="9.81" step="0.01"/></label>
+        <button id="p_simulate">Mô phỏng Thế năng</button>
+        <div class="formula"><strong>Công thức:</strong> U = m · g · h</div>
+        <div id="p_info" class="info"></div>
+      </div>
+
+      <div id="kinetic-section" class="panel-section" style="display: none;">
+        <div class="section-title">Bài 2: Động năng</div>
+        <label>Vận tốc (m/s): <input id="k_v" type="number" value="5" step="0.1" /></label>
+        <label>Khối lượng (kg): <input id="k_mass" type="number" value="2" step="0.1"/></label>
+        <button id="k_simulate">Mô phỏng Động năng</button>
+        <div class="formula"><strong>Công thức:</strong> K = ½ · m · v²  — mũi tên chỉ hướng vận tốc (hướng chuyển động)</div>
+        <div id="k_info" class="info"></div>
+      </div>
+
+      <div id="projectile-section" class="panel-section" style="display: none;">
+        <div class="section-title">Bài 3: Chuyển động ném xiên</div>
+        <label>Tốc độ ban đầu v₀ (m/s): <input id="pr_v0" type="number" value="12" step="0.1"/></label>
+        <label>Góc phóng (°): <input id="pr_angle" type="number" value="45" step="0.1"/></label>
+        <label>Khối lượng (kg): <input id="pr_mass" type="number" value="1" step="0.1"/></label>
+        <label>Gia tốc trọng trường (m/s²): <input id="pr_g" type="number" value="9.81" step="0.01"/></label>
+        <button id="pr_simulate">Mô phỏng Ném xiên</button>
+        <div class="formula">
+          <strong>Công thức chính:</strong><br>
+          t_f = 2·v₀·sinθ / g<br>
+          R = v₀·cosθ · t_f<br>
+          h_max = v₀²·sin²θ / (2·g)
+        </div>
+        <div id="pr_info" class="info"></div>
+      </div>
+
+      <div id="horizontal-section" class="panel-section" style="display: none;">
+        <div class="section-title">Bài 4: Chuyển động ném ngang</div>
+        <label>Chiều cao phóng (m): <input id="h_height" type="number" value="5" step="0.1"/></label>
+        <label>Vận tốc ngang (m/s): <input id="h_vx" type="number" value="6" step="0.1"/></label>
+        <label>Khối lượng (kg): <input id="h_mass" type="number" value="1.5" step="0.1"/></label>
+        <label>Gia tốc trọng trường (m/s²): <input id="h_g" type="number" value="9.81" step="0.01"/></label>
+        <button id="h_simulate">Mô phỏng Ném ngang</button>
+        <div class="formula"><strong>Công thức:</strong> t = √(2·h / g)  —  d = vₓ · t</div>
+        <div id="h_info" class="info"></div>
+      </div>
+
+      <div id="pulley-section" class="panel-section" style="display: none;">
+        <div class="section-title">Bài 5: Hệ thống ròng rọc</div>
+        <label>Khối lượng vật (kg): <input id="r_mass" type="number" value="2" step="0.1"/></label>
+        <label>Chiều cao kéo (m): <input id="r_height" type="number" value="5" step="0.1"/></label>
+        <label>Gia tốc trọng trường (m/s²): <input id="r_g" type="number" value="9.81" step="0.01"/></label>
+        <label><input id="r_single" type="checkbox" checked> Ròng rọc đơn (đổi hướng, lợi = 1)</label>
+        <button id="r_simulate">Mô phỏng Ròng rọc</button>
+        <div class="formula">
+          <strong>Công thức:</strong><br>
+          W = m · g · h<br>
+          (Ròng rọc nhiều tầng giảm lực theo lợi cơ học)
+        </div>
+        <div id="r_info" class="info"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="popup-overlay" id="help-popup">
+    <div class="popup-content">
+        <button class="popup-close-btn" id="close-popup-btn">&times;</button>
+        <h2>Hướng dẫn sử dụng Phần mềm Trợ giảng 3D</h2>
+        <p>Đây là công cụ hỗ trợ giảng dạy tương tác 3D, giúp giáo viên và học sinh khám phá các mô hình giáo dục một cách trực quan và sinh động.</p>
+        
+        <h3>Hướng dẫn cơ bản</h3>
+        <ul>
+            <li>**Xoay mô hình**: Giữ chuột trái và kéo để xoay mô hình 360°</li>
+            <li>**Di chuyển**: Giữ chuột phải và kéo để di chuyển mô hình</li>
+            <li>**Phóng to/Thu nhỏ**: Sử dụng con lăn chuột hoặc cử chỉ pinch trên màn hình cảm ứng</li>
+            <li>**Chế độ trình chiếu**: Nhấn F11 để vào chế độ toàn màn hình</li>
+            <li>**Điều hướng nhanh**: Sử dụng các phím mũi tên để xoay mô hình</li>
+        </ul>
+
+        <h3>Tính năng dành cho giáo viên</h3>
+        <ul>
+            <li>**Trình chiếu bài giảng**: Tích hợp các mô hình 3D vào bài giảng PowerPoint</li>
+            <li>**Ghi chú trực tiếp**: Thêm ghi chú và đánh dấu lên mô hình</li>
+            <li>**Lưu góc nhìn**: Lưu các góc nhìn ưa thích để dễ dàng chuyển đổi</li>
+            <li>**Chia sẻ màn hình**: Tích hợp với các nền tảng dạy học trực tuyến</li>
+        </ul>
+
+        <hr>
+        <h3>Mục tiêu giáo dục</h3>
+        <p>Phần mềm được thiết kế nhằm:</p>
+        <ul>
+            <li>Hỗ trợ giảng dạy trực quan các khái niệm phức tạp</li>
+            <li>Tạo hứng thú học tập thông qua tương tác 3D</li>
+            <li>Phát triển tư duy không gian cho học sinh</li>
+            <li>Hỗ trợ đa dạng phong cách học tập</li>
+        </ul>
+
+        <div class="learning-tip">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Mẹo: Sử dụng phím F1 để mở lại hướng dẫn này bất cứ lúc nào</span>
+        </div>
+
+        <hr>
+        <div class="contact-info">
+            <p><strong>Hỗ trợ kỹ thuật:</strong> hotro@edusoft.edu.vn</p>
+            <p><strong>Phiên bản:</strong> 2.0 - 12/2025</p>
+        </div>
+    </div>
+</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+const overlay = document.getElementById('intro-overlay');
+const video = document.getElementById('intro-video');
+const skipBtn = document.getElementById('intro-skip');
+const hint = document.getElementById('intro-hint');
+const appRoot = document.getElementById('app-root');
+
+let introPlayedOnce = false;
+
+function finishIntro() {
+  if (!overlay) return;
+  overlay.classList.add('fade-out');
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    appRoot.style.visibility = 'visible';
+    startApp();
+  }, 650);
+}
+
+function skipIntro() {
+  try {
+    video.pause();
+  } catch(e){}
+  finishIntro();
+}
+
+skipBtn.addEventListener('click', skipIntro);
+overlay.addEventListener('click', (e) => {
+  if (video.muted) {
+    video.muted = false;
+    video.play().catch(()=>{ video.muted = true; });
+    hint.innerText = "Âm thanh đã bật (nếu trình duyệt cho phép)";
+    setTimeout(()=> hint.style.display = 'none', 1800);
+    return;
+  } else {
+    skipIntro();
+  }
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') skipIntro();
+});
+
+video.addEventListener('ended', () => {
+  finishIntro();
+});
+
+video.play().then(()=> {
+}).catch(() => {
+  video.muted = true;
+  video.play().catch(()=>{ });
+});
+
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+let scene, brainModel, heartModel, bodyModel, lungModel, bacteriaModel, camera, renderer, controls;
+
+let raycaster = new THREE.Raycaster();
+let mouse = new THREE.Vector2();
+let selectedMesh = null;
+let isDragging = false;
+let offset = new THREE.Vector3();
+
+let plane = new THREE.Plane();
+let planeNormal = new THREE.Vector3();
+let planePoint = new THREE.Vector3(0, 0, 0);
+let physScene, physCamera;
+const defaultViewport = document.getElementById('default-viewport');
+const vrContainer = document.getElementById('vr-container');
+
+let currentMode = 'default';
+let currentTool = 'move';
+
+let physObjects = {};
+let simState = {
+  potential: { running:false, v:0, g:9.81, mass:1, groundY:0.5 },
+  kinetic: { running:false, vx:0, mass:1 },
+  projectile: { running:false, vx:0, vy:0, t:0, g:9.81 },
+  horizontal: { running:false, vx:0, t:0, g:9.81, h0:5 },
+  pulley: { run:false, dir:1, y:1, maxY:6, speed:0.05, mass:1, g:9.81 }
+};
+
+let velArrow = null;
+let weightArrow = null;
+
+function init() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0e1320);
+
+  const canvas = document.getElementById('viewCanvas');
+  renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(defaultViewport.clientWidth, defaultViewport.clientHeight);
+
+  camera = new THREE.PerspectiveCamera(60, defaultViewport.clientWidth / defaultViewport.clientHeight, 0.1, 1000);
+  camera.position.set(0, 1.5, 3);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.0));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(5, 10, 7);
+  scene.add(dirLight);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  const loader = new FBXLoader();
+  
+  loader.load('nao.fbx', (object) => {
+    object.scale.setScalar(0.01);
+    object.traverse(child => {
+      if (child.isMesh && child.material) {
+        child.material.transparent = true;
+        child.material.opacity = 1;
+        child.material.needsUpdate = true;
+      }
+    });
+    brainModel = object;
+    brainModel.visible = false;
+    scene.add(brainModel);
+    console.log("Mô hình não đã tải xong!");
+  }, undefined, (err) => {
+    console.error("Lỗi khi tải mô hình não!", err);
+  });
+  
+  console.log("Đang tải mô hình cơ thể...");
+  loader.load('cothe.fbx', 
+    (object) => {
+      console.log("Mô hình cơ thể đã tải xong, đang xử lý...");
+      try {
+        object.scale.setScalar(0.01);
+        let meshCount = 0;
+        
+        object.traverse(child => {
+          if (child.isMesh) {
+            meshCount++;
+            console.log(`Tìm thấy mesh: ${child.name || 'Không tên'}`);
+            if (child.material) {
+              child.material.transparent = true;
+              child.material.opacity = 1;
+              child.material.needsUpdate = true;
+                    child.userData.originalMaterial = child.material;
+            }
+          }
+        });
+        
+        bodyModel = object;
+        bodyModel.visible = false;
+        scene.add(bodyModel);
+        console.log(`Mô hình cơ thể đã tải xong với ${meshCount} mesh!`);
+        
+      } catch (error) {
+        console.error("Lỗi khi xử lý mô hình cơ thể:", error);
+      }
+    },
+    (xhr) => {
+      console.log(`Đang tải mô hình cơ thể: ${(xhr.loaded / xhr.total * 100)}%`);
+    },
+    (err) => {
+      console.error("Lỗi khi tải mô hình cơ thể:", err);
+      alert("Không thể tải mô hình cơ thể. Vui lòng kiểm tra console để biết chi tiết lỗi.");
+    }
+  );
+
+  console.log("Đang tải mô hình phổi...");
+  loader.load('phoi.fbx', 
+    (object) => {
+      console.log("Mô hình phổi đã tải xong, đang xử lý...");
+      try {
+        object.scale.setScalar(0.1);
+        let meshCount = 0;
+        
+        object.traverse(child => {
+          if (child.isMesh) {
+            meshCount++;
+            console.log(`Tìm thấy mesh phổi: ${child.name || 'Không tên'}`);
+            if (child.material) {
+              child.material.transparent = true;
+              child.material.opacity = 1;
+              child.material.needsUpdate = true;
+                        child.material.color.set(0xffd1dc);
+              
+                    child.userData.originalMaterial = child.material;
+              
+              if (child.name && child.name.toLowerCase().includes('left')) {
+                child.userData.part = 'left';
+              } else if (child.name && child.name.toLowerCase().includes('right')) {
+                child.userData.part = 'right';
+              } else if (child.name && child.name.toLowerCase().includes('bronchi')) {
+                child.userData.part = 'bronchi';
+              }
+            }
+          }
+        });
+        
+        lungModel = object;
+        lungModel.visible = false;
+        scene.add(lungModel);
+        console.log(`Mô hình phổi đã tải xong với ${meshCount} mesh!`);
+        
+      } catch (error) {
+        console.error("Lỗi khi xử lý mô hình phổi:", error);
+      }
+    },
+    (xhr) => {
+      console.log(`Đang tải mô hình phổi: ${(xhr.loaded / xhr.total * 100).toFixed(0)}%`);
+    },
+    (err) => {
+      console.error("Lỗi khi tải mô hình phổi:", err);
+      alert("Không thể tải mô hình phổi. Vui lòng kiểm tra console để biết chi tiết lỗi.");
+    }
+  );
+
+  console.log("Đang tải mô hình tim...");
+  loader.load('tim.fbx', 
+    (object) => {
+      console.log("Mô hình tim đã tải xong, đang xử lý...");
+      try {
+        object.scale.setScalar(0.1);
+        let meshCount = 0;
+        
+        object.traverse(child => {
+          if (child.isMesh) {
+            meshCount++;
+            console.log(`Tìm thấy mesh: ${child.name || 'Không tên'}`);
+            if (child.material) {
+              child.material.transparent = true;
+              child.material.opacity = 1;
+              child.material.needsUpdate = true;
+                    child.material.color.set(0xff0000);
+              
+                    child.userData.originalMaterial = child.material;
+            }
+          }
+        });
+        
+        heartModel = object;
+        heartModel.visible = false;
+        scene.add(heartModel);
+        console.log(`Mô hình tim đã tải xong với ${meshCount} mesh!`);
+        
+        setTimeout(() => {
+          heartModel.visible = true;
+          console.log("Đã hiển thị mô hình tim (kiểm tra xem có thấy gì không?)");
+          setTimeout(() => {
+            if (heartModel) heartModel.visible = false;
+          }, 3000);
+        }, 1000);
+        
+      } catch (error) {
+        console.error("Lỗi khi xử lý mô hình tim:", error);
+      }
+    },
+    (xhr) => {
+      console.log(`Đang tải mô hình tim: ${(xhr.loaded / xhr.total * 100)}%`);
+    },
+    (err) => {
+      console.error("Lỗi khi tải mô hình tim:", err);
+      alert("Không thể tải mô hình tim. Vui lòng kiểm tra console để biết chi tiết lỗi.");
+    }
+  );
+
+  physScene = new THREE.Scene();
+  physScene.background = new THREE.Color(0xb5e5f7);
+
+  physCamera = new THREE.PerspectiveCamera(60, defaultViewport.clientWidth / defaultViewport.clientHeight, 0.1, 1000);
+  physCamera.position.set(0, 4, 12);
+  physCamera.lookAt(0,1,0);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(5,10,5);
+  physScene.add(ambient, dir);
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshPhongMaterial({ color: 0x9be0a3 }));
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = 0;
+  physScene.add(ground);
+
+  const ballGeo = new THREE.SphereGeometry(0.5, 32, 32);
+  const ballMat = new THREE.MeshPhongMaterial({ color: 0xff6b6b });
+  const ball = new THREE.Mesh(ballGeo, ballMat);
+  physScene.add(ball);
+  physObjects.ball = ball;
+
+  const wheel = new THREE.Mesh(new THREE.TorusGeometry(1,0.12,16,100), new THREE.MeshPhongMaterial({ color: 0x555555 }));
+  wheel.position.set(0,6,0);
+  wheel.rotation.x = Math.PI/2;
+  wheel.visible = false;
+  physScene.add(wheel);
+  physObjects.wheel = wheel;
+
+  velArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), ball.position, 1, 0x1f77b4, 0.4, 0.2);
+  velArrow.visible = false;
+  physScene.add(velArrow);
+
+  weightArrow = new THREE.ArrowHelper(new THREE.Vector3(0,-1,0), ball.position, 1, 0xd62728, 0.4, 0.2);
+  weightArrow.visible = false;
+  physScene.add(weightArrow);
+
+  resetPhysicsScene();
+  setupPhysicsUI();
+
+  document.querySelectorAll('.left-panel .nav-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.left-panel .nav-btn').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      
+      const mode = button.dataset.mode || 'default';
+      setMode(mode);
+
+      if (mode === 'vr') {
+          document.getElementById('default-viewport').style.display = 'none';
+          document.getElementById('vr-container').style.display = 'flex';
+      } else {
+          document.getElementById('default-viewport').style.display = 'flex';
+          document.getElementById('vr-container').style.display = 'none';
+      }
+    });
+  });
+
+  function showPhysicsControls(physicsType) {
+    document.querySelectorAll('#physics-panel .panel-section').forEach(section => {
+      section.style.display = 'none';
+    });
+    
+    const sectionMap = {
+      'potential': 'potential-section',
+      'kinetic': 'kinetic-section',
+      'projectile': 'projectile-section',
+      'horizontal': 'horizontal-section',
+      'pulley': 'pulley-section'
+    };
+    
+    const sectionId = sectionMap[physicsType];
+    if (sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) section.style.display = 'block';
+    }
+    
+    document.getElementById('model-panel').style.display = 'none';
+    document.getElementById('physics-panel').style.display = 'block';
+    
+    if (brainModel) brainModel.visible = false;
+  }
+  
+  document.querySelectorAll('.dropdown-content a[data-physics]').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const physicsType = item.getAttribute('data-physics');
+      
+      resetPhysicsScene();
+      
+      showPhysicsControls(physicsType);
+      
+      switch(physicsType) {
+        case 'potential':
+          document.getElementById('p_height').value = '5';
+          document.getElementById('p_mass').value = '1';
+          document.getElementById('p_g').value = '9.81';
+          document.getElementById('p_simulate').click();
+          break;
+          
+        case 'kinetic':
+          document.getElementById('k_v').value = '2';
+          document.getElementById('k_mass').value = '1';
+          document.getElementById('k_simulate').click();
+          break;
+          
+        case 'projectile':
+          document.getElementById('pr_v0').value = '5';
+          document.getElementById('pr_angle').value = '45';
+          document.getElementById('pr_mass').value = '1';
+          document.getElementById('pr_g').value = '9.81';
+          document.getElementById('pr_simulate').click();
+          break;
+          
+        case 'horizontal':
+          document.getElementById('h_height').value = '5';
+          document.getElementById('h_vx').value = '2';
+          document.getElementById('h_mass').value = '1';
+          document.getElementById('h_g').value = '9.81';
+          document.getElementById('h_simulate').click();
+          break;
+          
+        case 'pulley':
+          document.getElementById('r_mass').value = '5';
+          document.getElementById('r_height').value = '4';
+          document.getElementById('r_g').value = '9.81';
+          document.getElementById('r_single').checked = true;
+          document.getElementById('r_simulate').click();
+          break;
+      }
+    });
+  });
+  
+  document.getElementById('brain-model-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log("Đang tải mô hình não (1.glb)...");
+    
+      if (currentMode === 'physics') {
+      resetPhysicsScene();
+    }
+    
+    setMode('default');
+    
+    if (brainModel) scene.remove(brainModel);
+    if (heartModel) heartModel.visible = false;
+    if (bodyModel) bodyModel.visible = false;
+    if (lungModel) lungModel.visible = false;
+    
+    if (camera) {
+      camera.position.set(0, 1.5, 3);
+      camera.lookAt(0, 0, 0);
+      if (controls) controls.reset();
+    }
+    
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load(
+      '1.glb',
+      (gltf) => {
+        console.log("Đã tải xong mô hình 1.glb");
+        brainModel = gltf.scene;
+        scene.add(brainModel);
+        brainModel.scale.set(0.1, 0.1, 0.1);
+        
+        document.getElementById('brain-controls').style.display = 'block';
+        document.getElementById('heart-controls').style.display = 'none';
+        document.getElementById('body-controls').style.display = 'none';
+        document.getElementById('lung-controls').style.display = 'none';
+      },
+      (xhr) => {
+        console.log(`Đang tải mô hình: ${(xhr.loaded / xhr.total * 100).toFixed(0)}%`);
+      },
+      (error) => {
+        console.error("Lỗi khi tải mô hình 1.glb:", error);
+      }
+    );
+  });
+
+  document.querySelectorAll('.dropdown-content a[data-anatomy]').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const anatomyType = item.getAttribute('data-anatomy');
+      console.log("Đã chọn:", anatomyType);
+      
+          if (currentMode === 'physics') {
+        resetPhysicsScene();
+      }
+      
+      setMode('default');
+      
+      if (brainModel) brainModel.visible = false;
+      if (heartModel) heartModel.visible = false;
+      if (bodyModel) bodyModel.visible = false;
+      if (lungModel) lungModel.visible = false;
+      
+        if (camera) {
+        camera.position.set(0, 1.5, 3);
+        camera.lookAt(0, 0, 0);
+        if (controls) controls.reset();
+      }
+      
+      if (anatomyType === 'brain' && brainModel) {
+        console.log("Đang hiển thị mô hình não");
+        brainModel.visible = true;
+        document.getElementById('brain-controls').style.display = 'block';
+        document.getElementById('heart-controls').style.display = 'none';
+        document.getElementById('body-controls').style.display = 'none';
+        document.getElementById('lung-controls').style.display = 'none';
+      } 
+      else if (anatomyType === 'heart' && heartModel) {
+        console.log("Đang hiển thị mô hình tim");
+        heartModel.visible = true;
+        document.getElementById('brain-controls').style.display = 'none';
+        document.getElementById('heart-controls').style.display = 'block';
+        document.getElementById('body-controls').style.display = 'none';
+        document.getElementById('lung-controls').style.display = 'none';
+        
+        if (camera) {
+          camera.position.set(0, 0, 5);
+          camera.lookAt(0, 0, 0);
+          if (controls) controls.update();
+        }
+      }
+      else if (anatomyType === 'body' && bodyModel) {
+        console.log("Đang hiển thị mô hình cơ thể");
+        bodyModel.visible = true;
+        document.getElementById('brain-controls').style.display = 'none';
+        document.getElementById('heart-controls').style.display = 'none';
+        document.getElementById('body-controls').style.display = 'block';
+        document.getElementById('lung-controls').style.display = 'none';
+        
+        if (camera) {
+          camera.position.set(0, 1, 5);
+          camera.lookAt(0, 1, 0);
+          if (controls) controls.update();
+        }
+      }
+      else if (anatomyType === 'lung' && lungModel) {
+        console.log("Đang hiển thị mô hình phổi");
+        lungModel.visible = true;
+        document.getElementById('brain-controls').style.display = 'none';
+        document.getElementById('body-controls').style.display = 'none';
+        document.getElementById('heart-controls').style.display = 'none';
+        document.getElementById('lung-controls').style.display = 'block';
+        if (bacteriaModel) bacteriaModel.visible = false;
+        
+        if (camera) {
+          camera.position.set(0, 0, 5);
+          if (controls) controls.update();
+        }
+      }
+      else if (anatomyType === 'bacteria' && bacteriaModel) {
+        console.log("Đang hiển thị mô hình vi khuẩn");
+        bacteriaModel.visible = true;
+        document.getElementById('brain-controls').style.display = 'none';
+        document.getElementById('body-controls').style.display = 'none';
+        document.getElementById('heart-controls').style.display = 'none';
+        document.getElementById('lung-controls').style.display = 'none';
+        
+        if (brainModel) brainModel.visible = false;
+        if (heartModel) heartModel.visible = false;
+        if (bodyModel) bodyModel.visible = false;
+        if (lungModel) lungModel.visible = false;
+        
+        if (camera) {
+          camera.position.set(0, 0, 2);
+          if (controls) controls.update();
+        }
+      }
+      else {
+        console.warn("Không tìm thấy mô hình:", anatomyType);
+      }
+    });
+  });
+
+  const rng = document.getElementById('rngOpacity');
+  rng.addEventListener('input', () => {
+    const val = parseInt(rng.value, 10);
+    document.getElementById('opacityVal').textContent = val + "%";
+    if (brainModel) {
+      brainModel.traverse(c => {
+        if (c.isMesh && c.material) {
+          c.material.opacity = val / 100;
+          c.material.needsUpdate = true;
+        }
+      });
+    }
+  });
+
+  document.querySelectorAll('.panel-section input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', (event) => {
+      const part = event.target.dataset.part;
+      const modelType = event.target.dataset.model;
+      const isVisible = event.target.checked;
+      
+      let targetModel;
+      switch(modelType) {
+        case 'brain': targetModel = brainModel; break;
+        case 'heart': targetModel = heartModel; break;
+        case 'lung': targetModel = lungModel; break;
+        default: targetModel = null;
+      }
+      
+      if (targetModel) {
+        targetModel.traverse(child => {
+          if (child.isMesh) {
+            if (modelType === 'brain' && child.name.toLowerCase().includes(part)) {
+              child.visible = isVisible;
+            }
+            else if (modelType === 'heart' && child.name && 
+                    child.name.toLowerCase().includes(part.toLowerCase())) {
+              child.visible = isVisible;
+            }
+            else if (modelType === 'lung' && child.userData.part) {
+              if (child.userData.part === part) {
+                child.visible = isVisible;
+              }
+              }
+          }
+        });
+      }
+    });
+  });
+
+  const helpBtn = document.getElementById('help-btn');
+  const helpPopup = document.getElementById('help-popup');
+  const closePopupBtn = document.getElementById('close-popup-btn');
+  helpBtn.addEventListener('click', () => { helpPopup.style.display = 'flex'; });
+  closePopupBtn.addEventListener('click', () => { helpPopup.style.display = 'none'; });
+  window.addEventListener('click', (event) => { if (event.target === helpPopup) helpPopup.style.display = 'none'; });
+
+  window.addEventListener('resize', onWindowResize, false);
+}
+
+function setupPhysicsUI() {
+  document.getElementById('p_simulate').addEventListener('click', () => {
+    resetPhysicsScene();
+    const h = parseFloat(document.getElementById('p_height').value) || 0;
+    const m = parseFloat(document.getElementById('p_mass').value) || 0;
+    const g = parseFloat(document.getElementById('p_g').value) || 9.81;
+    physObjects.ball.position.set(0, h, 0);
+    simState.potential.v = 0;
+    simState.potential.running = true;
+    simState.potential.g = g;
+    simState.potential.mass = m;
+    document.getElementById('p_info').innerText = `Thế năng ban đầu U = m·g·h = ${m}·${g}·${h} = ${(m * g * h).toFixed(3)} J`;
+    updateWeightArrow(m, g);
+    updateVelArrow(new THREE.Vector3(0,-0.01,0), 0.3);
+    setMode('physics');
+  });
+
+  document.getElementById('k_simulate').addEventListener('click', () => {
+    resetPhysicsScene();
+    const v = parseFloat(document.getElementById('k_v').value) || 0;
+    const m = parseFloat(document.getElementById('k_mass').value) || 0;
+    physObjects.ball.position.set(-5, 0.5, 0);
+    simState.kinetic.vx = v;
+    simState.kinetic.mass = m;
+    simState.kinetic.running = true;
+    document.getElementById('k_info').innerText = `Động năng K = ½·m·v² = 0.5·${m}·${v}² = ${(0.5 * m * v * v).toFixed(3)} J`;
+    updateVelArrow(new THREE.Vector3(Math.sign(v)*Math.abs(v),0,0), Math.max(0.4, Math.abs(v)*0.25));
+    updateWeightArrow(m, 9.81);
+    setMode('physics');
+  });
+
+  document.getElementById('pr_simulate').addEventListener('click', () => {
+    resetPhysicsScene();
+    const v0 = parseFloat(document.getElementById('pr_v0').value) || 0;
+    const angleDeg = parseFloat(document.getElementById('pr_angle').value) || 0;
+    const g = parseFloat(document.getElementById('pr_g').value) || 9.81;
+    const m = parseFloat(document.getElementById('pr_mass').value) || 1;
+    const angle = angleDeg * Math.PI/180;
+    physObjects.ball.position.set(0, 0.5, 0);
+    simState.projectile.vx = v0 * Math.cos(angle);
+    simState.projectile.vy = v0 * Math.sin(angle);
+    simState.projectile.t = 0;
+    simState.projectile.g = g;
+    simState.projectile.m = m;
+    simState.projectile.running = true;
+    const t_flight = (2 * v0 * Math.sin(angle)) / g;
+    const range = v0 * Math.cos(angle) * t_flight;
+    const maxHeight = (v0*v0 * Math.sin(angle)*Math.sin(angle)) / (2*g);
+    document.getElementById('pr_info').innerText = `Tầm bay ≈ ${range.toFixed(3)} m\nThời gian bay ≈ ${t_flight.toFixed(3)} s\nĐộ cao cực đại ≈ ${maxHeight.toFixed(3)} m\n\nCông thức: t_f=2v₀sinθ/g, R=v₀cosθ·t_f, h_max=v₀²sin²θ/(2g)`;
+    updateWeightArrow(m, g);
+    updateVelArrow(new THREE.Vector3(simState.projectile.vx, simState.projectile.vy, 0), Math.max(0.4, v0*0.15));
+    setMode('physics');
+  });
+
+  document.getElementById('h_simulate').addEventListener('click', () => {
+    resetPhysicsScene();
+    const h = parseFloat(document.getElementById('h_height').value) || 0;
+    const vx = parseFloat(document.getElementById('h_vx').value) || 0;
+    const g = parseFloat(document.getElementById('h_g').value) || 9.81;
+    const m = parseFloat(document.getElementById('h_mass').value) || 1;
+    physObjects.ball.position.set(-5, h, 0);
+    simState.horizontal.vx = vx;
+    simState.horizontal.t = 0;
+    simState.horizontal.g = g;
+    simState.horizontal.h0 = h;
+    simState.horizontal.m = m;
+    simState.horizontal.running = true;
+    const t = Math.sqrt((2*h)/g);
+    const dist = vx * t;
+    document.getElementById('h_info').innerText = `Thời gian rơi ≈ ${t.toFixed(3)} s\nQuãng đường ngang ≈ ${dist.toFixed(3)} m\nCông thức: t = √(2h/g), d = vₓ·t`;
+    updateWeightArrow(m, g);
+    updateVelArrow(new THREE.Vector3(vx, 0, 0), Math.max(0.4, Math.abs(vx)*0.25));
+    setMode('physics');
+  });
+
+  document.getElementById('r_simulate').addEventListener('click', () => {
+    resetPhysicsScene();
+    const m = parseFloat(document.getElementById('r_mass').value) || 0;
+    const h = parseFloat(document.getElementById('r_height').value) || 0;
+    const g = parseFloat(document.getElementById('r_g').value) || 9.81;
+    const single = document.getElementById('r_single').checked;
+    physObjects.ball.position.set(0, 1, 0);
+    physObjects.wheel.visible = true;
+    simState.pulley.run = true;
+    simState.pulley.dir = 1;
+    simState.pulley.y = 1;
+    simState.pulley.maxY = h + 1;
+    simState.pulley.speed = 0.06;
+    simState.pulley.mass = m;
+    simState.pulley.g = g;
+    simState.pulley.single = single;
+    const W = m * g * h;
+    const neededForce = single ? m*g : (m*g)/2;
+    document.getElementById('r_info').innerText = `Công cần thiết W = m·g·h = ${m}·${g}·${h} = ${W.toFixed(3)} J\nLực cần kéo (ròng rọc ${single ? 'đơn' : 'nhiều tầng'}) ≈ ${neededForce.toFixed(3)} N`;
+    updateWeightArrow(m, g);
+    updateVelArrow(new THREE.Vector3(0,1,0), 1.8);
+    setMode('physics');
+  });
+}
+
+function resetPhysicsScene() {
+  for (let key in simState) {
+    if (key === 'pulley') {
+      simState[key].run = false;
+      simState[key].dir = 1;
+      simState[key].y = 1;
+    } else {
+      simState[key].running = false;
+      simState[key].t = 0;
+      if (key === 'potential') { simState[key].v = 0; simState[key].groundY = 0.5; }
+    }
+  }
+  physObjects.ball.position.set(0, 1, 0);
+  physObjects.ball.visible = true;
+  physObjects.wheel.visible = false;
+  if (velArrow) velArrow.visible = false;
+  if (weightArrow) weightArrow.visible = false;
+  const ids = ['p_info','k_info','pr_info','h_info','r_info'];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.textContent = ''; });
+}
+
+function updateVelArrow(vec, length) {
+  if (!velArrow) return;
+  if (!vec || vec.length() === 0) {
+    velArrow.visible = false;
+    return;
+  }
+  const dir = vec.clone().normalize();
+  velArrow.setDirection(dir);
+  velArrow.setLength(length || Math.min(4, vec.length()*0.5)+0.1, 0.4, 0.2);
+  velArrow.position.copy(physObjects.ball.position);
+  velArrow.visible = true;
+}
+function updateWeightArrow(mass, g) {
+  if (!weightArrow) return;
+  const W = (mass || 0) * (g || 9.81);
+  const length = Math.min(3.5, 0.0006 * Math.abs(W) + 0.8);
+  weightArrow.setDirection(new THREE.Vector3(0,-1,0));
+  weightArrow.setLength(length, 0.4, 0.2);
+  weightArrow.position.copy(physObjects.ball.position);
+  weightArrow.visible = true;
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('status-mode').textContent = `Chế độ: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+  if (mode === 'physics') {
+    document.getElementById('model-panel').style.display = 'none';
+    document.getElementById('physics-panel').style.display = 'block';
+    if (brainModel) brainModel.visible = false;
+    physCamera.aspect = defaultViewport.clientWidth / defaultViewport.clientHeight;
+    physCamera.updateProjectionMatrix();
+  } else {
+    document.getElementById('model-panel').style.display = 'block';
+    document.getElementById('physics-panel').style.display = 'none';
+    if (brainModel) brainModel.visible = true;
+    physObjects.wheel.visible = false;
+    physObjects.ball.visible = true;
+    for (let k in simState) {
+      if (simState[k].running !== undefined) simState[k].running = false;
+      if (simState[k].run !== undefined) simState[k].run = false;
+    }
+  }
+}
+
+function onWindowResize() {
+  const isVR = (currentMode === 'vr');
+  const containerWidth = isVR ? vrContainer.clientWidth / 2 : defaultViewport.clientWidth;
+  const containerHeight = isVR ? vrContainer.clientHeight : defaultViewport.clientHeight;
+
+  camera.aspect = containerWidth / containerHeight;
+  camera.updateProjectionMatrix();
+
+  physCamera.aspect = containerWidth / containerHeight;
+  physCamera.updateProjectionMatrix();
+
+  renderer.setSize(containerWidth, containerHeight);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (controls) controls.update();
+
+  if (currentMode === 'physics') {
+    if (simState.potential.running) {
+      simState.potential.v += (simState.potential.g || 9.81) * 0.016;
+      physObjects.ball.position.y -= simState.potential.v * 0.016;
+      updateWeightArrow(simState.potential.mass, simState.potential.g);
+      updateVelArrow(new THREE.Vector3(0, -simState.potential.v, 0), Math.max(0.2, Math.abs(simState.potential.v)*0.2));
+      if (physObjects.ball.position.y <= simState.potential.groundY) {
+        physObjects.ball.position.y = simState.potential.groundY;
+        simState.potential.running = false;
+        document.getElementById('p_info').innerText += "\nVật đã chạm đất!";
+      }
+    }
+
+    if (simState.kinetic.running) {
+      physObjects.ball.position.x += (simState.kinetic.vx || 0) * 0.02;
+      updateVelArrow(new THREE.Vector3(simState.kinetic.vx, 0, 0), Math.max(0.2, Math.abs(simState.kinetic.vx)*0.25));
+      updateWeightArrow(simState.kinetic.mass, 9.81);
+      if (physObjects.ball.position.x > 6) {
+        simState.kinetic.running = false;
+        document.getElementById('k_info').innerText += "\nVật đã dừng (ra khỏi vùng hiển thị).";
+        physObjects.ball.position.x = -5;
+      }
+    }
+
+    if (simState.projectile.running) {
+      const s = simState.projectile;
+      const dt = 0.016;
+      s.t += dt;
+      physObjects.ball.position.x = s.vx * s.t;
+      physObjects.ball.position.y = 0.5 + s.vy * s.t - 0.5 * s.g * s.t * s.t;
+      const vy_t = s.vy - s.g * s.t;
+      updateVelArrow(new THREE.Vector3(s.vx, vy_t, 0), Math.max(0.3, Math.hypot(s.vx, vy_t)*0.15));
+      updateWeightArrow(s.m, s.g);
+      if (physObjects.ball.position.y <= 0.5) {
+        physObjects.ball.position.y = 0.5;
+        s.running = false;
+        document.getElementById('pr_info').innerText += "\nVật chạm đất.";
+      }
+    }
+
+    if (simState.horizontal.running) {
+      const s = simState.horizontal;
+      const dt = 0.016;
+      s.t += dt;
+      physObjects.ball.position.x = -5 + s.vx * s.t;
+      physObjects.ball.position.y = s.h0 - 0.5 * s.g * s.t * s.t;
+      updateVelArrow(new THREE.Vector3(s.vx, -s.g * s.t, 0), Math.max(0.3, Math.hypot(s.vx, -s.g*s.t)*0.15));
+      updateWeightArrow(s.m, s.g);
+      if (physObjects.ball.position.y <= 0.5) {
+        physObjects.ball.position.y = 0.5;
+        s.running = false;
+        document.getElementById('h_info').innerText += "\nVật chạm đất.";
+      }
+    }
+
+    if (simState.pulley.run) {
+      const s = simState.pulley;
+      physObjects.ball.position.y += s.speed * s.dir;
+      if (physObjects.ball.position.y >= s.maxY) s.dir = -1;
+      if (physObjects.ball.position.y <= 1) s.dir = 1;
+      physObjects.wheel.rotation.z += 0.05 * s.dir;
+      updateWeightArrow(s.mass, s.g);
+    }
+
+    renderer.render(physScene, physCamera);
+  } else {
+    renderer.render(scene, camera);
+  }
+}
+
+function startApp() {
+  try {
+    init();
+    
+    console.log("Đang tải mô hình vi khuẩn...");
+    const loader = new FBXLoader();
+    loader.load('vikhuan.fbx', 
+        (object) => {
+        console.log("Mô hình vi khuẩn đã tải xong, đang xử lý...");
+        try {
+          bacteriaModel = object;
+          bacteriaModel.scale.set(0.1, 0.1, 0.1);
+          bacteriaModel.position.set(0, 0, 0);
+          bacteriaModel.visible = false;
+          scene.add(bacteriaModel);
+          console.log("Đã thêm mô hình vi khuẩn vào cảnh");
+        } catch (error) {
+          console.error("Lỗi khi xử lý mô hình vi khuẩn:", error);
+        }
+      },
+        (xhr) => {
+        console.log(`Đang tải mô hình vi khuẩn: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
+      },
+        (error) => {
+        console.error("Lỗi khi tải mô hình vi khuẩn:", error);
+      }
+    );
+    
+    animate();
+    setMode('default');
+    appRoot.style.visibility = 'visible';
+  } catch (e) {
+    console.error("Lỗi khi khởi tạo app:", e);
+  }
+}
+</script>
+</body>
+</html>
