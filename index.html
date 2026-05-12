@@ -263,6 +263,7 @@
     font-size: 0.95em;
   }
   input[type="range"] {
+    appearance: none;
     -webkit-appearance: none;
     width: 100%;
     height: 8px;
@@ -285,8 +286,57 @@
     margin-right: 8px;
     accent-color: #2998ff;
   }
-  .panel-section div {
-    margin-bottom: 8px;
+
+  /* Settings Panel Styles */
+  .settings-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333a4d;
+  }
+  .settings-tab {
+    flex: 1;
+    padding: 10px;
+    background: #1b2130;
+    color: #cfe6ff;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .settings-tab.active {
+    background: #2998ff;
+    color: #012;
+  }
+  .settings-tab-content {
+    display: none;
+  }
+  .settings-tab-content.active {
+    display: block;
+  }
+  .settings-section {
+    margin-bottom: 20px;
+  }
+  .settings-section h4 {
+    color: #7ad0ff;
+    margin-bottom: 10px;
+    font-size: 1em;
+  }
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .radio-option input[type="radio"] {
+    margin: 0;
+  }
+  .radio-option label {
+    cursor: pointer;
+    font-size: 0.9em;
   }
 
   .footer-status-bar {
@@ -489,26 +539,26 @@
   <div class="main-section">
     <div class="top-nav">
       <div class="dropdown">
-        <button class="dropbtn">Vật lý <i class="fa fa-caret-down"></i></button>
+        <button class="dropbtn" data-i18n="physics">Vật lý <i class="fa fa-caret-down"></i></button>
         <div class="dropdown-content">
-          <a href="#" data-physics="potential">Thế năng</a>
-          <a href="#" data-physics="kinetic">Động năng</a>
-          <a href="#" data-physics="projectile">Ném xiên</a>
-          <a href="#" data-physics="horizontal">Ném ngang</a>
-          <a href="#" data-physics="pulley">Ròng rọc</a>
+          <a href="#" data-physics="potential" data-i18n="potential">Thế năng</a>
+          <a href="#" data-physics="kinetic" data-i18n="kinetic">Động năng</a>
+          <a href="#" data-physics="projectile" data-i18n="projectile">Ném xiên</a>
+          <a href="#" data-physics="horizontal" data-i18n="horizontal">Ném ngang</a>
+          <a href="#" data-physics="pulley" data-i18n="pulley">Ròng rọc</a>
         </div>
       </div>
       <div class="dropdown">
-        <button class="dropbtn">Sinh học <i class="fa fa-caret-down"></i></button>
+        <button class="dropbtn" data-i18n="biology">Sinh học <i class="fa fa-caret-down"></i></button>
         <div class="dropdown-content">
-          <a href="#" data-anatomy="brain">Mô hình não bộ</a>
-          <a href="#" data-anatomy="heart">Mô hình tim</a>
-          <a href="#" data-anatomy="body">Mô hình cơ thể</a>
-          <a href="#" data-anatomy="lung">Mô hình phổi</a>
-          <a href="#" data-anatomy="bacteria">Mô hình vi khuẩn</a>
+          <a href="#" data-anatomy="brain" data-i18n="brain">Mô hình não bộ</a>
+          <a href="#" data-anatomy="heart" data-i18n="heart">Mô hình tim</a>
+          <a href="#" data-anatomy="body" data-i18n="body">Mô hình cơ thể</a>
+          <a href="#" data-anatomy="lung" data-i18n="lung">Mô hình phổi</a>
+          <a href="#" data-anatomy="bacteria" data-i18n="bacteria">Mô hình vi khuẩn</a>
         </div>
       </div>
-      <button id="brain-model-btn" class="tool-btn" title="Mô hình não bộ">1</button>
+      <p style="margin-left: 10px; color: #c5d3e5; font-size: 0.9em;" data-i18n="notes">Ghi chú: Não, Tim, Cơ thể, Phổi, Vi khuẩn</p>
       <div style="flex-grow: 1;"></div>
     </div>
 
@@ -529,35 +579,219 @@
   </div>
 
   <div class="right-panel">
+    <div id="settings-panel">
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="system" data-i18n="settings-tab-system">Cấu Hình Hệ Thống</button>
+        <button class="settings-tab" data-tab="controls" data-i18n="settings-tab-controls">Điều Khiển & Tương Tác</button>
+        <button class="settings-tab" data-tab="physics" data-i18n="settings-tab-physics">Thông Số Môi Trường</button>
+      </div>
+
+      <div id="system-tab" class="settings-tab-content active">
+        <div class="settings-section">
+          <h4>Ngôn Ngữ</h4>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" id="lang-vi-radio" name="language" value="vi" checked>
+              <label for="lang-vi-radio">Tiếng Việt</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="lang-en-radio" name="language" value="en">
+              <label for="lang-en-radio">English</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Chế độ Render</h4>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" id="render-solid" name="render-mode" value="solid" checked>
+              <label for="render-solid">Solid (Mặc định)</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="render-wireframe" name="render-mode" value="wireframe">
+              <label for="render-wireframe">Wireframe (Khung lưới)</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="render-xray" name="render-mode" value="xray">
+              <label for="render-xray">X-Ray (Xuyên thấu)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Giám sát hiệu năng</h4>
+          <div class="radio-option">
+            <input type="checkbox" id="performance-monitor">
+            <label for="performance-monitor">Hiển thị bảng giám sát FPS</label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Khử răng cưa</h4>
+          <div class="radio-option">
+            <input type="checkbox" id="antialiasing" checked>
+            <label for="antialiasing">Bật khử răng cưa</label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Hậu kỳ (Bloom)</h4>
+          <label class="slider-label">
+            <span>Độ rực rỡ:</span>
+            <span id="bloom-intensity-val">0.5</span>
+          </label>
+          <input type="range" id="bloom-intensity" min="0" max="2" step="0.1" value="0.5">
+        </div>
+      </div>
+
+      <div id="controls-tab" class="settings-tab-content">
+        <div class="settings-section">
+          <h4>Động lực học Camera</h4>
+          <label class="slider-label">
+            <span>Độ nhạy xoay:</span>
+            <span id="rotate-sensitivity-val">1.0</span>
+          </label>
+          <input type="range" id="rotate-sensitivity" min="0.1" max="3" step="0.1" value="1.0">
+
+          <label class="slider-label">
+            <span>Độ nhạy Zoom:</span>
+            <span id="zoom-sensitivity-val">1.0</span>
+          </label>
+          <input type="range" id="zoom-sensitivity" min="0.1" max="3" step="0.1" value="1.0">
+
+          <label class="slider-label">
+            <span>Góc nhìn (FOV):</span>
+            <span id="fov-val">60</span>
+          </label>
+          <input type="range" id="fov" min="30" max="90" step="5" value="60">
+        </div>
+
+        <div class="settings-section">
+          <h4>Chế độ Trình chiếu</h4>
+          <div class="radio-option">
+            <input type="checkbox" id="auto-rotate">
+            <label for="auto-rotate">Tự động xoay</label>
+          </div>
+          <label class="slider-label" id="auto-rotate-speed-label" style="display: none;">
+            <span>Tốc độ xoay tự động:</span>
+            <span id="auto-rotate-speed-val">2.0</span>
+          </label>
+          <input type="range" id="auto-rotate-speed" min="0.1" max="5" step="0.1" value="2.0" style="display: none;">
+
+          <div class="radio-option">
+            <input type="checkbox" id="smooth-transition">
+            <label for="smooth-transition">Focus mượt</label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4>Rung phản hồi</h4>
+          <div class="radio-option">
+            <input type="checkbox" id="haptic-feedback">
+            <label for="haptic-feedback">Bật rung khi tương tác</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="physics-tab" class="settings-tab-content">
+        <div class="settings-section">
+          <h4>Biến số Vật lý</h4>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" id="gravity-earth" name="gravity" value="9.81" checked>
+              <label for="gravity-earth">Trái Đất: 9.81 m/s²</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="gravity-moon" name="gravity" value="1.62">
+              <label for="gravity-moon">Mặt Trăng: 1.62 m/s²</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="gravity-zero" name="gravity" value="0">
+              <label for="gravity-zero">Không trọng lực: 0 m/s²</label>
+            </div>
+          </div>
+
+          <div class="radio-option">
+            <input type="checkbox" id="air-resistance">
+            <label for="air-resistance">Lực cản môi trường</label>
+          </div>
+          <label class="slider-label" id="drag-coeff-label" style="display: none;">
+            <span>Hệ số cản:</span>
+            <span id="drag-coeff-val">0.01</span>
+          </label>
+          <input type="range" id="drag-coeff" min="0" max="0.1" step="0.001" value="0.01" style="display: none;">
+
+          <label class="slider-label">
+            <span>Thời gian thực:</span>
+            <span id="time-scale-val">1.0x</span>
+          </label>
+          <input type="range" id="time-scale" min="0.5" max="2" step="0.1" value="1.0">
+        </div>
+
+        <div class="settings-section">
+          <h4>Trợ lý AI</h4>
+          <div class="radio-group">
+            <div class="radio-option">
+              <input type="radio" id="ai-junior" name="ai-level" value="junior">
+              <label for="ai-junior">Cấp THCS</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="ai-high" name="ai-level" value="high" checked>
+              <label for="ai-high">Cấp THPT</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="ai-expert" name="ai-level" value="expert">
+              <label for="ai-expert">Chuyên gia</label>
+            </div>
+          </div>
+
+          <div class="radio-option">
+            <input type="checkbox" id="text-to-speech">
+            <label for="text-to-speech">Đọc to phản hồi AI</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="model-panel">
       <div class="panel-section">
-        <h3 class="panel-title">Thuộc tính mô hình</h3>
+        <h3 class="panel-title" data-i18n="model-properties">Thuộc tính mô hình</h3>
         <label class="slider-label">
-          <span>Độ trong suốt:</span>
+          <span data-i18n="transparency">Độ trong suốt:</span>
           <span id="opacityVal">100%</span>
         </label>
         <input type="range" id="rngOpacity" min="0" max="100" value="100" style="width: 100%;"/>
       </div>
 
       <div class="panel-section" id="brain-controls">
-        <h3 class="panel-title">Hiển thị lớp</h3>
-        <div><input type="checkbox" checked data-part="cortex" data-model="brain"/> Vỏ não</div>
-        <div><input type="checkbox" checked data-part="cerebellum" data-model="brain"/> Tiểu não</div>
-        <div><input type="checkbox" data-part="brainstem" data-model="brain"/> Thân não</div>
+        <h3 class="panel-title" data-i18n="display-layers">Hiển thị lớp</h3>
+        <div><input type="checkbox" checked data-part="cortex" data-model="brain"/> <span data-i18n="cortex">Vỏ não</span></div>
+        <div><input type="checkbox" checked data-part="cerebellum" data-model="brain"/> <span data-i18n="cerebellum">Tiểu não</span></div>
+        <div><input type="checkbox" data-part="brainstem" data-model="brain"/> <span data-i18n="brainstem">Thân não</span></div>
       </div>
       
       <div class="panel-section" id="heart-controls" style="display: none;">
-        <h3 class="panel-title">Hiển thị tim</h3>
-        <div><input type="checkbox" checked data-part="atria" data-model="heart"/> Tâm nhĩ</div>
-        <div><input type="checkbox" checked data-part="ventricles" data-model="heart"/> Tâm thất</div>
-        <div><input type="checkbox" checked data-part="vessels" data-model="heart"/> Mạch máu</div>
+        <h3 class="panel-title" data-i18n="display-layers">Hiển thị tim</h3>
+        <div><input type="checkbox" checked data-part="atria" data-model="heart"/> <span data-i18n="atria">Tâm nhĩ</span></div>
+        <div><input type="checkbox" checked data-part="ventricles" data-model="heart"/> <span data-i18n="ventricles">Tâm thất</span></div>
+        <div><input type="checkbox" checked data-part="vessels" data-model="heart"/> <span data-i18n="vessels">Mạch máu</span></div>
       </div>
       
       <div class="panel-section" id="lung-controls" style="display: none;">
-        <h3 class="panel-title">Hiển thị phổi</h3>
-        <div><input type="checkbox" checked data-part="left" data-model="lung"/> Phổi trái</div>
-        <div><input type="checkbox" checked data-part="right" data-model="lung"/> Phổi phải</div>
-        <div><input type="checkbox" checked data-part="bronchi" data-model="lung"/> Phế quản</div>
+        <h3 class="panel-title" data-i18n="display-layers">Hiển thị phổi</h3>
+        <div><input type="checkbox" checked data-part="left" data-model="lung"/> <span data-i18n="left">Phổi trái</span></div>
+        <div><input type="checkbox" checked data-part="right" data-model="lung"/> <span data-i18n="right">Phổi phải</span></div>
+        <div><input type="checkbox" checked data-part="bronchi" data-model="lung"/> <span data-i18n="bronchi">Phế quản</span></div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h3 class="panel-title" data-i18n="ask-ai">Hỏi AI Trợ Lý</h3>
+      <textarea id="ai-chat-input" data-i18n="ai-placeholder" placeholder="Bạn muốn hỏi gì về mô hình đang hiển thị?" style="width: 100%; min-height: 60px; padding: 8px; border-radius: 6px; border: 1px solid #333a4d; background: #0f1318; color: #e6eef7; margin-bottom: 10px; resize: vertical;"></textarea>
+      <button id="ai-send-btn" class="tool-btn" style="width: 100%;"><i class="fa-solid fa-robot"></i> <span data-i18n="ask-button">Hỏi AI</span></button>
+      <div id="ai-chat-output" style="margin-top: 15px; padding: 10px; border-radius: 8px; background: #1a1e27; border: 1px solid #2a3040; color: #cfe6ff; min-height: 40px; font-size: 0.9em;">
+        Xin chào! Tôi là AI trợ lý của bạn. Hãy hỏi tôi về các mô hình sinh học hoặc vật lý.
       </div>
     </div>
 
@@ -644,6 +878,7 @@
             <li>**Phóng to/Thu nhỏ**: Sử dụng con lăn chuột hoặc cử chỉ pinch trên màn hình cảm ứng</li>
             <li>**Chế độ trình chiếu**: Nhấn F11 để vào chế độ toàn màn hình</li>
             <li>**Điều hướng nhanh**: Sử dụng các phím mũi tên để xoay mô hình</li>
+            <li>**Tương tác sinh học**: Click vào các bộ phận của mô hình để xem thông tin chi tiết và đánh dấu</li>
         </ul>
 
         <h3>Tính năng dành cho giáo viên</h3>
@@ -672,7 +907,7 @@
         <hr>
         <div class="contact-info">
             <p><strong>Hỗ trợ kỹ thuật:</strong> hotro@edusoft.edu.vn</p>
-            <p><strong>Phiên bản:</strong> 2.0 - 12/2025</p>
+            <p><strong>Phiên bản:</strong> 2.1 - Tương tác Sinh học</p>
         </div>
     </div>
 </div>
@@ -743,8 +978,13 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import Stats from 'three/addons/libs/stats.module.js';
+import * as TWEEN from 'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.esm.js';
 
-let scene, brainModel, heartModel, bodyModel, lungModel, bacteriaModel, camera, renderer, controls;
+let scene, brainModel, heartModel, bodyModel, lungModel, bacteriaModel, camera, renderer, controls, composer, bloomPass, stats;
 
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
@@ -761,6 +1001,290 @@ const vrContainer = document.getElementById('vr-container');
 
 let currentMode = 'default';
 let currentTool = 'move';
+let currentLanguage = 'vi';
+
+// Settings variables
+let renderMode = 'solid';
+let performanceMonitor = false;
+let antialiasing = true;
+let bloomIntensity = 0.5;
+let rotateSensitivity = 1.0;
+let zoomSensitivity = 1.0;
+let fov = 60;
+let autoRotate = false;
+let autoRotateSpeed = 2.0;
+let smoothTransition = false;
+let hapticFeedback = false;
+let gravity = 9.81;
+let airResistance = false;
+let dragCoeff = 0.01;
+let timeScale = 1.0;
+let aiLevel = 'high';
+let textToSpeech = false;
+
+const translations = {
+  vi: {
+    'language': 'Ngôn Ngữ',
+    'language-vi': 'Tiếng Việt',
+    'language-en': 'English',
+    'settings-tab-system': 'Cấu Hình Hệ Thống',
+    'settings-tab-controls': 'Điều Khiển & Tương Tác',
+    'settings-tab-physics': 'Thông Số Môi Trường',
+    'physics': 'Vật lý',
+    'potential': 'Thế năng',
+    'kinetic': 'Động năng',
+    'projectile': 'Ném xiên',
+    'horizontal': 'Ném ngang',
+    'pulley': 'Ròng rọc',
+    'biology': 'Sinh học',
+    'brain': 'Mô hình não bộ',
+    'heart': 'Mô hình tim',
+    'body': 'Mô hình cơ thể',
+    'lung': 'Mô hình phổi',
+    'bacteria': 'Mô hình vi khuẩn',
+    'model-properties': 'Thuộc tính mô hình',
+    'transparency': 'Độ trong suốt',
+    'display-layers': 'Hiển thị lớp',
+    'cortex': 'Vỏ não',
+    'cerebellum': 'Tiểu não',
+    'brainstem': 'Thân não',
+    'atria': 'Tâm nhĩ',
+    'ventricles': 'Tâm thất',
+    'vessels': 'Mạch máu',
+    'left': 'Phổi trái',
+    'right': 'Phổi phải',
+    'bronchi': 'Phế quản',
+    'ask-ai': 'Hỏi AI Trợ Lý',
+    'ai-placeholder': 'Bạn muốn hỏi gì về mô hình đang hiển thị?',
+    'ask-button': 'Hỏi AI',
+    'physics-experiments': 'Thí Nghiệm Vật Lý Tương Tác',
+    'explore-physics': 'Khám phá các hiện tượng vật lý thông qua mô phỏng trực quan',
+    'lesson-1': 'Bài 1: Thế năng',
+    'explore-potential': 'Khám phá thế năng thông qua thí nghiệm thả vật thể',
+    'height': 'Chiều cao (m)',
+    'mass': 'Khối lượng (kg)',
+    'gravity': 'Gia tốc trọng trường (m/s²)',
+    'simulate': 'Mô phỏng',
+    'formula': 'Công thức',
+    'status-ready': 'Sẵn sàng',
+    'status-tool': 'Công cụ: Di chuyển',
+    'notes': 'Ghi chú: Não, Tim, Cơ thể, Phổi, Vi khuẩn',
+    'render-mode': 'Chế độ Render',
+    'render-solid': 'Solid (Mặc định)',
+    'render-wireframe': 'Wireframe (Khung lưới)',
+    'render-xray': 'X-Ray (Xuyên thấu)',
+    'performance-monitor': 'Giám sát hiệu năng',
+    'fps-display': 'Hiển thị bảng giám sát FPS',
+    'antialiasing': 'Khử răng cưa',
+    'antialiasing-enable': 'Bật khử răng cưa',
+    'bloom-intensity': 'Cường độ Bloom',
+    'rotate-sensitivity': 'Xoay: Độ nhạy',
+    'zoom-sensitivity': 'Loại Zoom: Độ nhạy',
+    'fov': 'Trường nhìn (FOV)',
+    'auto-rotate': 'Quay tự động',
+    'auto-rotate-speed': 'Tốc độ quay tự động',
+    'smooth-transition': 'Chuyển động mượt mà',
+    'haptic-feedback': 'Phản hồi xúc giác',
+    'gravity-presets': 'Cài đặt Trọng lực',
+    'air-resistance': 'Lực cản môi trường',
+    'drag-coeff': 'Hệ số cản',
+    'time-scale': 'Thời gian thực',
+    'ai-assistant': 'Trợ lý AI',
+    'ai-junior': 'Cấp THCS',
+    'ai-high': 'Cấp THPT',
+    'ai-expert': 'Chuyên gia',
+    'text-to-speech': 'Đọc to phản hồi AI'
+  },
+  en: {
+    'language': 'Language',
+    'language-vi': 'Tiếng Việt',
+    'language-en': 'English',
+    'settings-tab-system': 'System & Graphics',
+    'settings-tab-controls': 'Controls & Interaction',
+    'settings-tab-physics': 'Physics Parameters',
+    'physics': 'Physics',
+    'potential': 'Potential Energy',
+    'kinetic': 'Kinetic Energy',
+    'projectile': 'Projectile Motion',
+    'horizontal': 'Horizontal Motion',
+    'pulley': 'Pulley System',
+    'biology': 'Biology',
+    'brain': 'Brain Model',
+    'heart': 'Heart Model',
+    'body': 'Body Model',
+    'lung': 'Lung Model',
+    'bacteria': 'Bacteria Model',
+    'model-properties': 'Model Properties',
+    'transparency': 'Transparency',
+    'display-layers': 'Display Layers',
+    'cortex': 'Cortex',
+    'cerebellum': 'Cerebellum',
+    'brainstem': 'Brainstem',
+    'atria': 'Atria',
+    'ventricles': 'Ventricles',
+    'vessels': 'Blood Vessels',
+    'left': 'Left',
+    'right': 'Right',
+    'bronchi': 'Bronchi',
+    'ask-ai': 'Ask AI Assistant',
+    'ai-placeholder': 'What would you like to know about the current model?',
+    'ask-button': 'Ask AI',
+    'physics-experiments': 'Interactive Physics Experiments',
+    'explore-physics': 'Explore physics phenomena through visual simulation',
+    'lesson-1': 'Lesson 1: Potential Energy',
+    'explore-potential': 'Explore potential energy through object drop experiments',
+    'height': 'Height (m)',
+    'mass': 'Mass (kg)',
+    'gravity': 'Gravity (m/s²)',
+    'simulate': 'Simulate',
+    'formula': 'Formula',
+    'status-ready': 'Ready',
+    'status-tool': 'Tool: Move',
+    'notes': 'Notes: Brain, Heart, Body, Lungs, Bacteria',
+    'render-mode': 'Render Mode',
+    'render-solid': 'Solid (Default)',
+    'render-wireframe': 'Wireframe (Mesh)',
+    'render-xray': 'X-Ray (Transparent)',
+    'performance-monitor': 'Performance Monitoring',
+    'fps-display': 'Display FPS Monitor',
+    'antialiasing': 'Anti-aliasing',
+    'antialiasing-enable': 'Enable Anti-aliasing',
+    'bloom-intensity': 'Bloom Intensity',
+    'rotate-sensitivity': 'Rotation: Sensitivity',
+    'zoom-sensitivity': 'Zoom: Sensitivity',
+    'fov': 'Field of View (FOV)',
+    'auto-rotate': 'Auto Rotate',
+    'auto-rotate-speed': 'Auto Rotate Speed',
+    'smooth-transition': 'Smooth Transition',
+    'haptic-feedback': 'Haptic Feedback',
+    'gravity-presets': 'Gravity Presets',
+    'air-resistance': 'Air Resistance',
+    'drag-coeff': 'Drag Coefficient',
+    'time-scale': 'Time Scale',
+    'ai-assistant': 'AI Assistant',
+    'ai-junior': 'Junior High',
+    'ai-high': 'High School',
+    'ai-expert': 'Expert',
+    'text-to-speech': 'Read AI Response Aloud'
+  }
+};
+
+function changeLanguage(lang) {
+  currentLanguage = lang;
+  localStorage.setItem('preferredLanguage', lang);
+  
+  // Update language radio buttons
+  document.getElementById('lang-vi-radio').checked = (lang === 'vi');
+  document.getElementById('lang-en-radio').checked = (lang === 'en');
+  
+  // Update all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang][key]) {
+      if (el.tagName === 'INPUT' && el.type === 'text') {
+        el.placeholder = translations[lang][key];
+      } else if (el.tagName === 'TEXTAREA') {
+        el.placeholder = translations[lang][key];
+      } else if (el.tagName === 'SPAN' || el.tagName === 'LABEL' || el.tagName === 'DIV' || el.tagName === 'H3' || el.tagName === 'P') {
+        el.textContent = translations[lang][key];
+      } else {
+        el.innerHTML = translations[lang][key] + (el.innerHTML.includes('fa-caret-down') ? ' <i class="fa fa-caret-down"></i>' : '');
+      }
+    }
+  });
+  
+  // Update all h4 titles in settings
+  const titleMap = {
+    'Ngôn Ngữ': 'language',
+    'Chế độ Render': 'render-mode',
+    'Giám sát hiệu năng': 'performance-monitor',
+    'Khử răng cưa': 'antialiasing',
+    'Cường độ Bloom': 'bloom-intensity',
+    'Xoay: Độ nhạy': 'rotate-sensitivity',
+    'Loại Zoom: Độ nhạy': 'zoom-sensitivity',
+    'Trường nhìn (FOV)': 'fov',
+    'Quay tự động': 'auto-rotate',
+    'Tốc độ quay tự động': 'auto-rotate-speed',
+    'Chuyển động mượt mà': 'smooth-transition',
+    'Phản hồi xúc giác': 'haptic-feedback',
+    'Lực cản môi trường': 'air-resistance',
+    'Hệ số cản': 'drag-coeff',
+    'Thời gian thực': 'time-scale',
+    'Trợ lý AI': 'ai-assistant'
+  };
+  
+  const enTitleMap = {
+    'Language': 'language',
+    'Render Mode': 'render-mode',
+    'Performance Monitoring': 'performance-monitor',
+    'Anti-aliasing': 'antialiasing',
+    'Bloom Intensity': 'bloom-intensity',
+    'Rotation: Sensitivity': 'rotate-sensitivity',
+    'Zoom: Sensitivity': 'zoom-sensitivity',
+    'Field of View (FOV)': 'fov',
+    'Auto Rotate': 'auto-rotate',
+    'Auto Rotate Speed': 'auto-rotate-speed',
+    'Smooth Transition': 'smooth-transition',
+    'Haptic Feedback': 'haptic-feedback',
+    'Air Resistance': 'air-resistance',
+    'Drag Coefficient': 'drag-coeff',
+    'Time Scale': 'time-scale',
+    'AI Assistant': 'ai-assistant'
+  };
+  
+  document.querySelectorAll('.settings-section h4').forEach(h4 => {
+    const viKey = titleMap[h4.textContent];
+    if (viKey && translations[lang][viKey]) {
+      h4.textContent = translations[lang][viKey];
+    }
+  });
+  
+  // Update labels for render mode
+  document.getElementById('render-solid').nextElementSibling.textContent = translations[lang]['render-solid'] || 'Solid (Default)';
+  document.getElementById('render-wireframe').nextElementSibling.textContent = translations[lang]['render-wireframe'] || 'Wireframe';
+  document.getElementById('render-xray').nextElementSibling.textContent = translations[lang]['render-xray'] || 'X-Ray';
+  
+  // Update performance monitor label
+  const perfLabel = document.querySelector('label[for="performance-monitor"]');
+  if (perfLabel) perfLabel.textContent = translations[lang]['fps-display'] || 'Display FPS Monitor';
+  
+  // Update antialiasing label
+  const antiLabel = document.querySelector('label[for="antialiasing"]');
+  if (antiLabel) antiLabel.textContent = translations[lang]['antialiasing-enable'] || 'Enable Anti-aliasing';
+  
+  // Update dropdown buttons with icon
+  document.querySelectorAll('.dropbtn').forEach(btn => {
+    const currentHTML = btn.innerHTML;
+    if (currentHTML.includes('fa-caret-down')) {
+      const hasPhysics = btn.textContent.includes('Vật lý') || btn.textContent.includes('Physics');
+      const hasBiology = btn.textContent.includes('Sinh học') || btn.textContent.includes('Biology');
+      if (hasPhysics) {
+        btn.innerHTML = translations[lang]['physics'] + ' <i class="fa fa-caret-down"></i>';
+      } else if (hasBiology) {
+        btn.innerHTML = translations[lang]['biology'] + ' <i class="fa fa-caret-down"></i>';
+      }
+    }
+  });
+  
+  // Update tab names
+  const tabButtons = document.querySelectorAll('.settings-tab');
+  const tabNames = ['Cấu Hình Hệ Thống', 'Điều Khiển & Tương Tác', 'Thông Số Môi Trường'];
+  const enTabNames = ['System & Graphics', 'Controls & Interaction', 'Physics Parameters'];
+  
+  tabButtons.forEach((btn, idx) => {
+    if (lang === 'vi') {
+      btn.textContent = tabNames[idx];
+    } else {
+      btn.textContent = enTabNames[idx];
+    }
+  });
+}
+
+// Load saved language preference on startup
+document.addEventListener('DOMContentLoaded', () => {
+  const savedLanguage = localStorage.getItem('preferredLanguage') || 'vi';
+  changeLanguage(savedLanguage);
+});
 
 let physObjects = {};
 let simState = {
@@ -774,16 +1298,45 @@ let simState = {
 let velArrow = null;
 let weightArrow = null;
 
+let currentActiveModel = null; // Biến toàn cục để theo dõi mô hình đang hoạt động
+
+const BIO_DATA = {
+  cortex: "Vỏ não: Trung tâm xử lý tư duy, trí nhớ, ngôn ngữ và ý thức. Đây là phần lớn nhất của não.",
+  cerebellum: "Tiểu não: Đóng vai trò quan trọng trong việc điều khiển vận động tinh tế, thăng bằng và phối hợp cơ thể.",
+  brainstem: "Thân não: Kết nối đại não và tiểu não với tủy sống, điều khiển các chức năng sống còn như nhịp thở, nhịp tim và huyết áp.",
+  left_lung: "Phổi trái: Gồm 2 thùy, đảm nhiệm chức năng trao đổi khí, lấy oxy và thải CO2 ra khỏi cơ thể.",
+  right_lung: "Phổi phải: Gồm 3 thùy, lớn hơn phổi trái, cũng thực hiện chức năng trao đổi khí.",
+  atria: "Tâm nhĩ: Hai buồng trên của tim (tâm nhĩ trái và phải) có nhiệm vụ nhận máu từ cơ thể và phổi.",
+  ventricles: "Tâm thất: Hai buồng dưới của tim (tâm thất trái và phải) có nhiệm vụ bơm máu đến phổi và toàn bộ cơ thể.",
+  tim: "Tim là một cơ quan rỗng có nhiệm vụ bơm máu giàu oxy và chất dinh dưỡng đi khắp cơ thể.",
+  phoi: "Phổi là cơ quan chính của hệ hô hấp, giúp cơ thể lấy oxy và loại bỏ carbon dioxide."
+};
+
+const BIO_DATA_EN = {
+  cortex: "Cortex: The center for processing thinking, memory, language, and consciousness. This is the largest part of the brain.",
+  cerebellum: "Cerebellum: Plays an important role in controlling fine motor movements, balance, and body coordination.",
+  brainstem: "Brainstem: Connects the cerebrum and cerebellum to the spinal cord, controls vital functions like breathing, heart rate, and blood pressure.",
+  left_lung: "Left Lung: Consists of 2 lobes, responsible for gas exchange, taking in oxygen and expelling CO2 from the body.",
+  right_lung: "Right Lung: Consists of 3 lobes, larger than the left lung, also performs gas exchange functions.",
+  atria: "Atria: The two upper chambers of the heart (left and right atria) receive blood from the body and lungs.",
+  ventricles: "Ventricles: The two lower chambers of the heart (left and right ventricles) pump blood to the lungs and throughout the body.",
+  tim: "Heart: A hollow organ whose function is to pump oxygen-rich blood and nutrients throughout the body.",
+  phoi: "Lungs: The primary organs of the respiratory system, helping the body take in oxygen and remove carbon dioxide."
+};
+
+let highlightedMeshes = [];
+let highlightTimeout = null;
+
 function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0e1320);
 
   const canvas = document.getElementById('viewCanvas');
-  renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+  renderer = new THREE.WebGLRenderer({ antialias: antialiasing, canvas: canvas });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(defaultViewport.clientWidth, defaultViewport.clientHeight);
 
-  camera = new THREE.PerspectiveCamera(60, defaultViewport.clientWidth / defaultViewport.clientHeight, 0.1, 1000);
+  camera = new THREE.PerspectiveCamera(fov, defaultViewport.clientWidth / defaultViewport.clientHeight, 0.1, 1000);
   camera.position.set(0, 1.5, 3);
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.0));
@@ -793,6 +1346,26 @@ function init() {
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
+  controls.rotateSpeed = rotateSensitivity;
+  controls.zoomSpeed = zoomSensitivity;
+  controls.autoRotate = autoRotate;
+  controls.autoRotateSpeed = autoRotateSpeed;
+
+  // Setup post-processing
+  composer = new EffectComposer(renderer);
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+  
+  bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomIntensity, 0.4, 0.85);
+  composer.addPass(bloomPass);
+
+  // Setup stats
+  stats = new Stats();
+  stats.dom.style.position = 'absolute';
+  stats.dom.style.top = '10px';
+  stats.dom.style.left = '10px';
+  document.body.appendChild(stats.dom);
+  stats.dom.style.display = performanceMonitor ? 'block' : 'none';
 
   const loader = new FBXLoader();
   
@@ -803,6 +1376,7 @@ function init() {
         child.material.transparent = true;
         child.material.opacity = 1;
         child.material.needsUpdate = true;
+        child.userData.originalMaterial = child.material;
       }
     });
     brainModel = object;
@@ -812,7 +1386,7 @@ function init() {
   }, undefined, (err) => {
     console.error("Lỗi khi tải mô hình não!", err);
   });
-  
+
   console.log("Đang tải mô hình cơ thể...");
   loader.load('cothe.fbx', 
     (object) => {
@@ -920,6 +1494,14 @@ function init() {
                     child.material.color.set(0xff0000);
               
                     child.userData.originalMaterial = child.material;
+              
+              if (child.name.toLowerCase().includes('atria')) {
+                child.userData.part = 'atria';
+              } else if (child.name.toLowerCase().includes('ventricles')) {
+                child.userData.part = 'ventricles';
+              } else if (child.name.toLowerCase().includes('vessels')) {
+                child.userData.part = 'vessels';
+              }
             }
           }
         });
@@ -991,6 +1573,8 @@ function init() {
   resetPhysicsScene();
   setupPhysicsUI();
 
+  renderer.domElement.addEventListener("click", onClick, false);
+
   document.querySelectorAll('.left-panel .nav-btn').forEach(button => {
     button.addEventListener('click', () => {
       document.querySelectorAll('.left-panel .nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -1047,7 +1631,7 @@ function init() {
         case 'potential':
           document.getElementById('p_height').value = '5';
           document.getElementById('p_mass').value = '1';
-          document.getElementById('p_g').value = '9.81';
+          document.getElementById('p_g').value = gravity;
           document.getElementById('p_simulate').click();
           break;
           
@@ -1061,7 +1645,7 @@ function init() {
           document.getElementById('pr_v0').value = '5';
           document.getElementById('pr_angle').value = '45';
           document.getElementById('pr_mass').value = '1';
-          document.getElementById('pr_g').value = '9.81';
+          document.getElementById('pr_g').value = gravity;
           document.getElementById('pr_simulate').click();
           break;
           
@@ -1069,14 +1653,14 @@ function init() {
           document.getElementById('h_height').value = '5';
           document.getElementById('h_vx').value = '2';
           document.getElementById('h_mass').value = '1';
-          document.getElementById('h_g').value = '9.81';
+          document.getElementById('h_g').value = gravity;
           document.getElementById('h_simulate').click();
           break;
           
         case 'pulley':
           document.getElementById('r_mass').value = '5';
           document.getElementById('r_height').value = '4';
-          document.getElementById('r_g').value = '9.81';
+          document.getElementById('r_g').value = gravity;
           document.getElementById('r_single').checked = true;
           document.getElementById('r_simulate').click();
           break;
@@ -1084,50 +1668,6 @@ function init() {
     });
   });
   
-  document.getElementById('brain-model-btn').addEventListener('click', (e) => {
-    e.preventDefault();
-    console.log("Đang tải mô hình não (1.glb)...");
-    
-      if (currentMode === 'physics') {
-      resetPhysicsScene();
-    }
-    
-    setMode('default');
-    
-    if (brainModel) scene.remove(brainModel);
-    if (heartModel) heartModel.visible = false;
-    if (bodyModel) bodyModel.visible = false;
-    if (lungModel) lungModel.visible = false;
-    
-    if (camera) {
-      camera.position.set(0, 1.5, 3);
-      camera.lookAt(0, 0, 0);
-      if (controls) controls.reset();
-    }
-    
-    const gltfLoader = new GLTFLoader();
-    gltfLoader.load(
-      '1.glb',
-      (gltf) => {
-        console.log("Đã tải xong mô hình 1.glb");
-        brainModel = gltf.scene;
-        scene.add(brainModel);
-        brainModel.scale.set(0.1, 0.1, 0.1);
-        
-        document.getElementById('brain-controls').style.display = 'block';
-        document.getElementById('heart-controls').style.display = 'none';
-        document.getElementById('body-controls').style.display = 'none';
-        document.getElementById('lung-controls').style.display = 'none';
-      },
-      (xhr) => {
-        console.log(`Đang tải mô hình: ${(xhr.loaded / xhr.total * 100).toFixed(0)}%`);
-      },
-      (error) => {
-        console.error("Lỗi khi tải mô hình 1.glb:", error);
-      }
-    );
-  });
-
   document.querySelectorAll('.dropdown-content a[data-anatomy]').forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1151,21 +1691,31 @@ function init() {
         if (controls) controls.reset();
       }
       
+      const brainControls = document.getElementById('brain-controls');
+      const heartControls = document.getElementById('heart-controls');
+      const bodyControls = document.getElementById('body-controls');
+      const lungControls = document.getElementById('lung-controls');
+
+      const hideAllModelControls = () => {
+        if (brainControls) brainControls.style.display = 'none';
+        if (heartControls) heartControls.style.display = 'none';
+        if (bodyControls) bodyControls.style.display = 'none';
+        if (lungControls) lungControls.style.display = 'none';
+      };
+
+      hideAllModelControls();
+
       if (anatomyType === 'brain' && brainModel) {
         console.log("Đang hiển thị mô hình não");
         brainModel.visible = true;
-        document.getElementById('brain-controls').style.display = 'block';
-        document.getElementById('heart-controls').style.display = 'none';
-        document.getElementById('body-controls').style.display = 'none';
-        document.getElementById('lung-controls').style.display = 'none';
+        currentActiveModel = brainModel;
+        if (brainControls) brainControls.style.display = 'block';
       } 
       else if (anatomyType === 'heart' && heartModel) {
         console.log("Đang hiển thị mô hình tim");
         heartModel.visible = true;
-        document.getElementById('brain-controls').style.display = 'none';
-        document.getElementById('heart-controls').style.display = 'block';
-        document.getElementById('body-controls').style.display = 'none';
-        document.getElementById('lung-controls').style.display = 'none';
+        currentActiveModel = heartModel;
+        if (heartControls) heartControls.style.display = 'block';
         
         if (camera) {
           camera.position.set(0, 0, 5);
@@ -1176,10 +1726,8 @@ function init() {
       else if (anatomyType === 'body' && bodyModel) {
         console.log("Đang hiển thị mô hình cơ thể");
         bodyModel.visible = true;
-        document.getElementById('brain-controls').style.display = 'none';
-        document.getElementById('heart-controls').style.display = 'none';
-        document.getElementById('body-controls').style.display = 'block';
-        document.getElementById('lung-controls').style.display = 'none';
+        currentActiveModel = bodyModel;
+        if (bodyControls) bodyControls.style.display = 'block';
         
         if (camera) {
           camera.position.set(0, 1, 5);
@@ -1190,10 +1738,8 @@ function init() {
       else if (anatomyType === 'lung' && lungModel) {
         console.log("Đang hiển thị mô hình phổi");
         lungModel.visible = true;
-        document.getElementById('brain-controls').style.display = 'none';
-        document.getElementById('body-controls').style.display = 'none';
-        document.getElementById('heart-controls').style.display = 'none';
-        document.getElementById('lung-controls').style.display = 'block';
+        currentActiveModel = lungModel;
+        if (lungControls) lungControls.style.display = 'block';
         if (bacteriaModel) bacteriaModel.visible = false;
         
         if (camera) {
@@ -1204,16 +1750,14 @@ function init() {
       else if (anatomyType === 'bacteria' && bacteriaModel) {
         console.log("Đang hiển thị mô hình vi khuẩn");
         bacteriaModel.visible = true;
-        document.getElementById('brain-controls').style.display = 'none';
-        document.getElementById('body-controls').style.display = 'none';
-        document.getElementById('heart-controls').style.display = 'none';
-        document.getElementById('lung-controls').style.display = 'none';
-        
+        currentActiveModel = bacteriaModel;
+        hideAllModelControls();
+
         if (brainModel) brainModel.visible = false;
         if (heartModel) heartModel.visible = false;
         if (bodyModel) bodyModel.visible = false;
         if (lungModel) lungModel.visible = false;
-        
+
         if (camera) {
           camera.position.set(0, 0, 2);
           if (controls) controls.update();
@@ -1226,18 +1770,21 @@ function init() {
   });
 
   const rng = document.getElementById('rngOpacity');
-  rng.addEventListener('input', () => {
-    const val = parseInt(rng.value, 10);
-    document.getElementById('opacityVal').textContent = val + "%";
-    if (brainModel) {
-      brainModel.traverse(c => {
-        if (c.isMesh && c.material) {
-          c.material.opacity = val / 100;
-          c.material.needsUpdate = true;
-        }
-      });
-    }
-  });
+  if (rng) {
+    rng.addEventListener('input', () => {
+      const val = parseInt(rng.value, 10);
+      const opacityVal = document.getElementById('opacityVal');
+      if (opacityVal) opacityVal.textContent = val + "%";
+      if (brainModel) {
+        brainModel.traverse(c => {
+          if (c.isMesh && c.material) {
+            c.material.opacity = val / 100;
+            c.material.needsUpdate = true;
+          }
+        });
+      }
+    });
+  }
 
   document.querySelectorAll('.panel-section input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', (event) => {
@@ -1277,11 +1824,233 @@ function init() {
   const helpBtn = document.getElementById('help-btn');
   const helpPopup = document.getElementById('help-popup');
   const closePopupBtn = document.getElementById('close-popup-btn');
-  helpBtn.addEventListener('click', () => { helpPopup.style.display = 'flex'; });
-  closePopupBtn.addEventListener('click', () => { helpPopup.style.display = 'none'; });
-  window.addEventListener('click', (event) => { if (event.target === helpPopup) helpPopup.style.display = 'none'; });
+  if (helpBtn && helpPopup && closePopupBtn) {
+    helpBtn.addEventListener('click', () => { helpPopup.style.display = 'flex'; });
+    closePopupBtn.addEventListener('click', () => { helpPopup.style.display = 'none'; });
+    window.addEventListener('click', (event) => { if (event.target === helpPopup) helpPopup.style.display = 'none'; });
+  }
+
+  // Settings event listeners
+  document.querySelectorAll('.settings-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+    });
+  });
+
+  // System settings
+  document.querySelectorAll('input[name="render-mode"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      renderMode = e.target.value;
+      applyRenderMode();
+    });
+  });
+
+  const perfMonitor = document.getElementById('performance-monitor');
+  if (perfMonitor && stats && stats.dom) {
+    perfMonitor.addEventListener('change', (e) => {
+      performanceMonitor = e.target.checked;
+      stats.dom.style.display = performanceMonitor ? 'block' : 'none';
+    });
+  }
+
+  const antiAliasEl = document.getElementById('antialiasing');
+  if (antiAliasEl) {
+    antiAliasEl.addEventListener('change', (e) => {
+      antialiasing = e.target.checked;
+    });
+  }
+
+  const bloomEl = document.getElementById('bloom-intensity');
+  const bloomVal = document.getElementById('bloom-intensity-val');
+  if (bloomEl) {
+    bloomEl.addEventListener('input', (e) => {
+      bloomIntensity = parseFloat(e.target.value);
+      if (bloomVal) bloomVal.textContent = bloomIntensity.toFixed(1);
+      if (bloomPass) bloomPass.strength = bloomIntensity;
+    });
+  }
+
+  // Controls settings
+  const rotateSensEl = document.getElementById('rotate-sensitivity');
+  const rotateSensVal = document.getElementById('rotate-sensitivity-val');
+  if (rotateSensEl) {
+    rotateSensEl.addEventListener('input', (e) => {
+      rotateSensitivity = parseFloat(e.target.value);
+      if (rotateSensVal) rotateSensVal.textContent = rotateSensitivity.toFixed(1);
+      if (controls) controls.rotateSpeed = rotateSensitivity;
+    });
+  }
+
+  const zoomSensEl = document.getElementById('zoom-sensitivity');
+  const zoomSensVal = document.getElementById('zoom-sensitivity-val');
+  if (zoomSensEl) {
+    zoomSensEl.addEventListener('input', (e) => {
+      zoomSensitivity = parseFloat(e.target.value);
+      if (zoomSensVal) zoomSensVal.textContent = zoomSensitivity.toFixed(1);
+      if (controls) controls.zoomSpeed = zoomSensitivity;
+    });
+  }
+
+  const fovEl = document.getElementById('fov');
+  const fovVal = document.getElementById('fov-val');
+  if (fovEl) {
+    fovEl.addEventListener('input', (e) => {
+      fov = parseInt(e.target.value);
+      if (fovVal) fovVal.textContent = fov;
+      if (camera) {
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+      }
+    });
+  }
+
+  const autoRotateEl = document.getElementById('auto-rotate');
+  const autoRotateSpeedLabel = document.getElementById('auto-rotate-speed-label');
+  const autoRotateSpeedEl = document.getElementById('auto-rotate-speed');
+  if (autoRotateEl) {
+    autoRotateEl.addEventListener('change', (e) => {
+      autoRotate = e.target.checked;
+      if (autoRotateSpeedLabel) autoRotateSpeedLabel.style.display = autoRotate ? 'flex' : 'none';
+      if (autoRotateSpeedEl) autoRotateSpeedEl.style.display = autoRotate ? 'block' : 'none';
+      if (controls) controls.autoRotate = autoRotate;
+    });
+  }
+
+  const autoRotateSpeedVal = document.getElementById('auto-rotate-speed-val');
+  if (autoRotateSpeedEl) {
+    autoRotateSpeedEl.addEventListener('input', (e) => {
+      autoRotateSpeed = parseFloat(e.target.value);
+      if (autoRotateSpeedVal) autoRotateSpeedVal.textContent = autoRotateSpeed.toFixed(1);
+      if (controls) controls.autoRotateSpeed = autoRotateSpeed;
+    });
+  }
+
+  const smoothTransEl = document.getElementById('smooth-transition');
+  if (smoothTransEl) {
+    smoothTransEl.addEventListener('change', (e) => {
+      smoothTransition = e.target.checked;
+    });
+  }
+
+  const hapticEl = document.getElementById('haptic-feedback');
+  if (hapticEl) {
+    hapticEl.addEventListener('change', (e) => {
+      hapticFeedback = e.target.checked;
+    });
+  }
+
+  // Physics settings
+  document.querySelectorAll('input[name="gravity"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      gravity = parseFloat(e.target.value);
+      updateGravity();
+    });
+  });
+
+  const airResEl = document.getElementById('air-resistance');
+  const dragCoeffLabel = document.getElementById('drag-coeff-label');
+  const dragCoeffEl = document.getElementById('drag-coeff');
+  if (airResEl) {
+    airResEl.addEventListener('change', (e) => {
+      airResistance = e.target.checked;
+      if (dragCoeffLabel) dragCoeffLabel.style.display = airResistance ? 'flex' : 'none';
+      if (dragCoeffEl) dragCoeffEl.style.display = airResistance ? 'block' : 'none';
+    });
+  }
+
+  const dragCoeffVal = document.getElementById('drag-coeff-val');
+  if (dragCoeffEl) {
+    dragCoeffEl.addEventListener('input', (e) => {
+      dragCoeff = parseFloat(e.target.value);
+      if (dragCoeffVal) dragCoeffVal.textContent = dragCoeff.toFixed(3);
+    });
+  }
+
+  const timeScaleEl = document.getElementById('time-scale');
+  const timeScaleVal = document.getElementById('time-scale-val');
+  if (timeScaleEl) {
+    timeScaleEl.addEventListener('input', (e) => {
+      timeScale = parseFloat(e.target.value);
+      if (timeScaleVal) timeScaleVal.textContent = timeScale.toFixed(1) + 'x';
+    });
+  }
+
+  document.querySelectorAll('input[name="ai-level"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      aiLevel = e.target.value;
+    });
+  });
+
+  const ttsEl = document.getElementById('text-to-speech');
+  if (ttsEl) {
+    ttsEl.addEventListener('change', (e) => {
+      textToSpeech = e.target.checked;
+    });
+  }
+
+  // Language selector events - radio buttons in settings
+  document.querySelectorAll('input[name="language"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      changeLanguage(e.target.value);
+    });
+  });
+
+  const aiSendBtn = document.getElementById('ai-send-btn');
+  if (aiSendBtn) {
+    aiSendBtn.addEventListener('click', () => {
+      const inputField = document.getElementById('ai-chat-input');
+      const outputDiv = document.getElementById('ai-chat-output');
+      const question = inputField ? inputField.value : '';
+
+      if (question) {
+        if (outputDiv) outputDiv.innerHTML = `<i class="fa-solid fa-robot"></i> AI: Đang xử lý...`;
+        setTimeout(() => {
+          const aiResponse = handleAI(question);
+          if (outputDiv) outputDiv.innerHTML = `<i class="fa-solid fa-robot"></i> AI: ${aiResponse}`;
+          if (textToSpeech && 'speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(aiResponse);
+            speechSynthesis.speak(utterance);
+          }
+          if (inputField) inputField.value = '';
+        }, 500);
+      } else {
+        if (outputDiv) outputDiv.innerHTML = `<i class="fa-solid fa-robot"></i> AI: Bạn chưa nhập câu hỏi nào!`;
+      }
+    });
+  }
 
   window.addEventListener('resize', onWindowResize, false);
+}
+
+function applyRenderMode() {
+  scene.traverse(child => {
+    if (child.isMesh && child.material) {
+      if (renderMode === 'wireframe') {
+        child.material.wireframe = true;
+        child.material.transparent = false;
+        child.material.opacity = 1;
+      } else if (renderMode === 'xray') {
+        child.material.wireframe = false;
+        child.material.transparent = true;
+        child.material.opacity = 0.3;
+      } else { // solid
+        child.material.wireframe = false;
+        child.material.transparent = false;
+        child.material.opacity = 1;
+      }
+      child.material.needsUpdate = true;
+    }
+  });
+}
+
+function updateGravity() {
+  simState.potential.g = gravity;
+  simState.projectile.g = gravity;
+  simState.horizontal.g = gravity;
+  simState.pulley.g = gravity;
 }
 
 function setupPhysicsUI() {
@@ -1289,7 +2058,7 @@ function setupPhysicsUI() {
     resetPhysicsScene();
     const h = parseFloat(document.getElementById('p_height').value) || 0;
     const m = parseFloat(document.getElementById('p_mass').value) || 0;
-    const g = parseFloat(document.getElementById('p_g').value) || 9.81;
+    const g = parseFloat(document.getElementById('p_g').value) || gravity;
     physObjects.ball.position.set(0, h, 0);
     simState.potential.v = 0;
     simState.potential.running = true;
@@ -1319,7 +2088,7 @@ function setupPhysicsUI() {
     resetPhysicsScene();
     const v0 = parseFloat(document.getElementById('pr_v0').value) || 0;
     const angleDeg = parseFloat(document.getElementById('pr_angle').value) || 0;
-    const g = parseFloat(document.getElementById('pr_g').value) || 9.81;
+    const g = parseFloat(document.getElementById('pr_g').value) || gravity;
     const m = parseFloat(document.getElementById('pr_mass').value) || 1;
     const angle = angleDeg * Math.PI/180;
     physObjects.ball.position.set(0, 0.5, 0);
@@ -1342,7 +2111,7 @@ function setupPhysicsUI() {
     resetPhysicsScene();
     const h = parseFloat(document.getElementById('h_height').value) || 0;
     const vx = parseFloat(document.getElementById('h_vx').value) || 0;
-    const g = parseFloat(document.getElementById('h_g').value) || 9.81;
+    const g = parseFloat(document.getElementById('h_g').value) || gravity;
     const m = parseFloat(document.getElementById('h_mass').value) || 1;
     physObjects.ball.position.set(-5, h, 0);
     simState.horizontal.vx = vx;
@@ -1363,7 +2132,7 @@ function setupPhysicsUI() {
     resetPhysicsScene();
     const m = parseFloat(document.getElementById('r_mass').value) || 0;
     const h = parseFloat(document.getElementById('r_height').value) || 0;
-    const g = parseFloat(document.getElementById('r_g').value) || 9.81;
+    const g = parseFloat(document.getElementById('r_g').value) || gravity;
     const single = document.getElementById('r_single').checked;
     physObjects.ball.position.set(0, 1, 0);
     physObjects.wheel.visible = true;
@@ -1419,7 +2188,7 @@ function updateVelArrow(vec, length) {
 }
 function updateWeightArrow(mass, g) {
   if (!weightArrow) return;
-  const W = (mass || 0) * (g || 9.81);
+  const W = (mass || 0) * (g || gravity);
   const length = Math.min(3.5, 0.0006 * Math.abs(W) + 0.8);
   weightArrow.setDirection(new THREE.Vector3(0,-1,0));
   weightArrow.setLength(length, 0.4, 0.2);
@@ -1430,16 +2199,29 @@ function updateWeightArrow(mass, g) {
 function setMode(mode) {
   currentMode = mode;
   document.getElementById('status-mode').textContent = `Chế độ: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+
+  resetHighlight();
+
   if (mode === 'physics') {
     document.getElementById('model-panel').style.display = 'none';
     document.getElementById('physics-panel').style.display = 'block';
+    document.getElementById('settings-panel').style.display = 'none';
     if (brainModel) brainModel.visible = false;
+    if (heartModel) heartModel.visible = false;
+    if (bodyModel) bodyModel.visible = false;
+    if (lungModel) lungModel.visible = false;
+    if (bacteriaModel) bacteriaModel.visible = false;
+    currentActiveModel = null;
     physCamera.aspect = defaultViewport.clientWidth / defaultViewport.clientHeight;
     physCamera.updateProjectionMatrix();
+  } else if (mode === 'settings') {
+    document.getElementById('model-panel').style.display = 'none';
+    document.getElementById('physics-panel').style.display = 'none';
+    document.getElementById('settings-panel').style.display = 'block';
   } else {
     document.getElementById('model-panel').style.display = 'block';
     document.getElementById('physics-panel').style.display = 'none';
-    if (brainModel) brainModel.visible = true;
+    document.getElementById('settings-panel').style.display = 'none';
     physObjects.wheel.visible = false;
     physObjects.ball.visible = true;
     for (let k in simState) {
@@ -1461,16 +2243,18 @@ function onWindowResize() {
   physCamera.updateProjectionMatrix();
 
   renderer.setSize(containerWidth, containerHeight);
+  if (composer) composer.setSize(containerWidth, containerHeight);
 }
 
 function animate() {
   requestAnimationFrame(animate);
   if (controls) controls.update();
+  if (stats) stats.update();
 
   if (currentMode === 'physics') {
     if (simState.potential.running) {
-      simState.potential.v += (simState.potential.g || 9.81) * 0.016;
-      physObjects.ball.position.y -= simState.potential.v * 0.016;
+      simState.potential.v += (simState.potential.g || gravity) * 0.016 * timeScale;
+      physObjects.ball.position.y -= simState.potential.v * 0.016 * timeScale;
       updateWeightArrow(simState.potential.mass, simState.potential.g);
       updateVelArrow(new THREE.Vector3(0, -simState.potential.v, 0), Math.max(0.2, Math.abs(simState.potential.v)*0.2));
       if (physObjects.ball.position.y <= simState.potential.groundY) {
@@ -1481,8 +2265,13 @@ function animate() {
     }
 
     if (simState.kinetic.running) {
-      physObjects.ball.position.x += (simState.kinetic.vx || 0) * 0.02;
-      updateVelArrow(new THREE.Vector3(simState.kinetic.vx, 0, 0), Math.max(0.2, Math.abs(simState.kinetic.vx)*0.25));
+      let vx = simState.kinetic.vx;
+      if (airResistance) {
+        const dragForce = -dragCoeff * vx * Math.abs(vx);
+        vx += dragForce * 0.016 * timeScale / simState.kinetic.mass;
+      }
+      physObjects.ball.position.x += vx * 0.02 * timeScale;
+      updateVelArrow(new THREE.Vector3(vx, 0, 0), Math.max(0.2, Math.abs(vx)*0.25));
       updateWeightArrow(simState.kinetic.mass, 9.81);
       if (physObjects.ball.position.x > 6) {
         simState.kinetic.running = false;
@@ -1493,12 +2282,23 @@ function animate() {
 
     if (simState.projectile.running) {
       const s = simState.projectile;
-      const dt = 0.016;
+      const dt = 0.016 * timeScale;
       s.t += dt;
+      let vx = s.vx;
+      let vy = s.vy - s.g * s.t;
+      if (airResistance) {
+        const speed = Math.sqrt(vx*vx + vy*vy);
+        if (speed > 0) {
+          const dragForce = -dragCoeff * speed * speed;
+          const dragX = dragForce * (vx / speed) / s.m;
+          const dragY = dragForce * (vy / speed) / s.m;
+          vx += dragX * dt;
+          vy += dragY * dt;
+        }
+      }
       physObjects.ball.position.x = s.vx * s.t;
       physObjects.ball.position.y = 0.5 + s.vy * s.t - 0.5 * s.g * s.t * s.t;
-      const vy_t = s.vy - s.g * s.t;
-      updateVelArrow(new THREE.Vector3(s.vx, vy_t, 0), Math.max(0.3, Math.hypot(s.vx, vy_t)*0.15));
+      updateVelArrow(new THREE.Vector3(vx, vy, 0), Math.max(0.3, Math.hypot(vx, vy)*0.15));
       updateWeightArrow(s.m, s.g);
       if (physObjects.ball.position.y <= 0.5) {
         physObjects.ball.position.y = 0.5;
@@ -1509,11 +2309,16 @@ function animate() {
 
     if (simState.horizontal.running) {
       const s = simState.horizontal;
-      const dt = 0.016;
+      const dt = 0.016 * timeScale;
       s.t += dt;
+      let vx = s.vx;
+      if (airResistance) {
+        const dragForce = -dragCoeff * vx * Math.abs(vx);
+        vx += dragForce * dt / s.m;
+      }
       physObjects.ball.position.x = -5 + s.vx * s.t;
       physObjects.ball.position.y = s.h0 - 0.5 * s.g * s.t * s.t;
-      updateVelArrow(new THREE.Vector3(s.vx, -s.g * s.t, 0), Math.max(0.3, Math.hypot(s.vx, -s.g*s.t)*0.15));
+      updateVelArrow(new THREE.Vector3(vx, -s.g * s.t, 0), Math.max(0.3, Math.hypot(vx, -s.g*s.t)*0.15));
       updateWeightArrow(s.m, s.g);
       if (physObjects.ball.position.y <= 0.5) {
         physObjects.ball.position.y = 0.5;
@@ -1524,17 +2329,326 @@ function animate() {
 
     if (simState.pulley.run) {
       const s = simState.pulley;
-      physObjects.ball.position.y += s.speed * s.dir;
+      physObjects.ball.position.y += s.speed * s.dir * timeScale;
       if (physObjects.ball.position.y >= s.maxY) s.dir = -1;
       if (physObjects.ball.position.y <= 1) s.dir = 1;
-      physObjects.wheel.rotation.z += 0.05 * s.dir;
+      physObjects.wheel.rotation.z += 0.05 * s.dir * timeScale;
       updateWeightArrow(s.mass, s.g);
     }
 
     renderer.render(physScene, physCamera);
   } else {
-    renderer.render(scene, camera);
+    if (composer) {
+      composer.render();
+    } else {
+      renderer.render(scene, camera);
+    }
   }
+}
+
+function onClick(event) {
+  if (currentMode !== "default") return;
+
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  let intersects = [];
+  if (brainModel && brainModel.visible) {
+    intersects = raycaster.intersectObject(brainModel, true);
+  } else if (lungModel && lungModel.visible) {
+    intersects = raycaster.intersectObject(lungModel, true);
+  } else if (heartModel && heartModel.visible) {
+    intersects = raycaster.intersectObject(heartModel, true);
+  } else if (bodyModel && bodyModel.visible) {
+    intersects = raycaster.intersectObject(bodyModel, true);
+  } else if (bacteriaModel && bacteriaModel.visible) {
+    intersects = raycaster.intersectObject(bacteriaModel, true);
+  }
+
+  if (intersects.length > 0) {
+    const point = intersects[0].point;
+    const part = detectPart(point);
+    if (part) {
+      handleBiologyInteraction(part);
+      if (hapticFeedback && navigator.vibrate) {
+        navigator.vibrate(100);
+      }
+    }
+  }
+}
+
+function detectPart(point) {
+  if (brainModel && brainModel.visible) {
+    currentActiveModel = brainModel;
+    return detectBrain(point, brainModel);
+  }
+  if (lungModel && lungModel.visible) {
+    currentActiveModel = lungModel;
+    return detectLung(point, lungModel);
+  }
+  if (heartModel && heartModel.visible) {
+    currentActiveModel = heartModel;
+    return detectHeart(point, heartModel);
+  }
+  return null;
+}
+
+function detectBrain(point, model) {
+  const modelY = point.y - model.position.y;
+  if (modelY > 0.4) return "cortex";
+  if (modelY > 0.0) return "cerebellum";
+  if (modelY > -0.4) return "brainstem";
+  return null;
+}
+
+function detectLung(point, model) {
+  const modelX = point.x - model.position.x;
+  if (modelX > 0.05) return "right_lung";
+  if (modelX < -0.05) return "left_lung";
+  return null;
+}
+
+function detectHeart(point, model) {
+  const modelY = point.y - model.position.y;
+  if (modelY > 0.1) return "atria";
+  if (modelY < -0.1) return "ventricles";
+  return null;
+}
+
+function handleBiologyInteraction(part) {
+  if (!part) return;
+  showInfo(part);
+  highlightPart(part);
+  
+  if (smoothTransition && currentActiveModel) {
+    const targetPosition = new THREE.Vector3();
+    const targetLookAt = new THREE.Vector3();
+    
+    // Calculate target position based on part
+    if (part === 'cortex') {
+      targetPosition.set(0, 1.5, 2);
+      targetLookAt.set(0, 0.8, 0);
+    } else if (part === 'cerebellum') {
+      targetPosition.set(0, 0.5, 2);
+      targetLookAt.set(0, 0, 0);
+    } else if (part === 'brainstem') {
+      targetPosition.set(0, -0.5, 2);
+      targetLookAt.set(0, -0.2, 0);
+    } else if (part === 'atria') {
+      targetPosition.set(0, 0.5, 3);
+      targetLookAt.set(0, 0.2, 0);
+    } else if (part === 'ventricles') {
+      targetPosition.set(0, -0.5, 3);
+      targetLookAt.set(0, -0.2, 0);
+    } else if (part === 'left_lung') {
+      targetPosition.set(-1, 0, 3);
+      targetLookAt.set(-0.5, 0, 0);
+    } else if (part === 'right_lung') {
+      targetPosition.set(1, 0, 3);
+      targetLookAt.set(0.5, 0, 0);
+    }
+    
+    new TWEEN.Tween(camera.position)
+      .to(targetPosition, 1000)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .start();
+      
+    new TWEEN.Tween(controls.target)
+      .to(targetLookAt, 1000)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .start();
+  }
+}
+
+function showInfo(part) {
+  const info = BIO_DATA[part] || "Không xác định. Vui lòng hỏi AI để biết thêm chi tiết.";
+  console.log(`Thông tin: ${info}`);
+  document.getElementById("status-mode").innerText = `Trạng thái: ${info}`;
+}
+
+function highlightPart(part) {
+  const modelToHighlight = currentActiveModel;
+  if (!modelToHighlight) return;
+
+  resetHighlight();
+
+  modelToHighlight.traverse(mesh => {
+    if (mesh.isMesh && mesh.material) {
+      let shouldHighlight = false;
+      if (part === "cortex" && mesh.name.toLowerCase().includes("cortex")) {
+        shouldHighlight = true;
+      } else if (part === "cerebellum" && mesh.name.toLowerCase().includes("cerebellum")) {
+        shouldHighlight = true;
+      } else if (part === "brainstem" && mesh.name.toLowerCase().includes("brainstem")) {
+        shouldHighlight = true;
+      } else if (part === "left_lung" && mesh.userData.part === "left") {
+        shouldHighlight = true;
+      } else if (part === "right_lung" && mesh.userData.part === "right") {
+        shouldHighlight = true;
+      } else if (part === "atria" && mesh.name.toLowerCase().includes("atria")) {
+        shouldHighlight = true;
+      } else if (part === "ventricles" && mesh.name.toLowerCase().includes("ventricles")) {
+        shouldHighlight = true;
+      }
+      
+      if (shouldHighlight) {
+        const highlightMaterial = new THREE.MeshPhongMaterial({
+          color: mesh.userData.originalMaterial.color,
+          emissive: 0x00ffcc,
+          emissiveIntensity: 0.6,
+          transparent: true,
+          opacity: mesh.userData.originalMaterial.opacity,
+        });
+        mesh.material = highlightMaterial;
+        highlightedMeshes.push(mesh);
+      }
+    }
+  });
+
+  if (highlightedMeshes.length === 0 && modelToHighlight) {
+    modelToHighlight.traverse(mesh => {
+      if (mesh.isMesh && mesh.material) {
+        if (!mesh.userData.originalMaterial) {
+          mesh.userData.originalMaterial = mesh.material;
+        }
+        const highlightMaterial = new THREE.MeshPhongMaterial({
+          color: mesh.userData.originalMaterial.color,
+          emissive: 0x00ffcc,
+          emissiveIntensity: 0.6,
+          transparent: true,
+          opacity: mesh.userData.originalMaterial.opacity,
+        });
+        mesh.material = highlightMaterial;
+        highlightedMeshes.push(mesh);
+      }
+    });
+  }
+
+  if (highlightTimeout) clearTimeout(highlightTimeout);
+  highlightTimeout = setTimeout(resetHighlight, 1500);
+}
+
+function resetHighlight() {
+  highlightedMeshes.forEach(mesh => {
+    if (mesh.userData.originalMaterial) {
+      mesh.material = mesh.userData.originalMaterial;
+    }
+  });
+  highlightedMeshes = [];
+  if (highlightTimeout) {
+    clearTimeout(highlightTimeout);
+    highlightTimeout = null;
+  }
+}
+
+function handleAI(question) {
+  question = question.toLowerCase().trim();
+  const lang = currentLanguage === 'en' ? 'en' : 'vi';
+  const bioData = lang === 'en' ? BIO_DATA_EN : BIO_DATA;
+  
+  let response = lang === 'en' 
+    ? "Sorry, I didn't understand your question. Please try again or ask more specifically."
+    : "Xin lỗi, tôi chưa hiểu câu hỏi của bạn. Vui lòng thử lại hoặc hỏi chi tiết hơn.";
+  let partToHighlight = null;
+
+  // Vietnamese questions
+  if (lang === 'vi') {
+    if (question.includes("não") || question.includes("nao")) {
+      response = bioData.cortex + " " + bioData.cerebellum + " " + bioData.brainstem;
+      partToHighlight = "cortex";
+    } else if (question.includes("vỏ não") || question.includes("vo nao")) {
+      response = bioData.cortex;
+      partToHighlight = "cortex";
+    } else if (question.includes("tiểu não") || question.includes("tieu nao")) {
+      response = bioData.cerebellum;
+      partToHighlight = "cerebellum";
+    } else if (question.includes("thân não") || question.includes("than nao")) {
+      response = bioData.brainstem;
+      partToHighlight = "brainstem";
+    } else if (question.includes("tim")) {
+      response = bioData.tim + " " + bioData.atria + " " + bioData.ventricles;
+      partToHighlight = "atria";
+    } else if (question.includes("tâm nhĩ") || question.includes("tam nhi")) {
+      response = bioData.atria;
+      partToHighlight = "atria";
+    } else if (question.includes("tâm thất") || question.includes("tam that")) {
+      response = bioData.ventricles;
+      partToHighlight = "ventricles";
+    } else if (question.includes("phổi") || question.includes("phoi")) {
+      response = bioData.phoi + " " + bioData.left_lung + " " + bioData.right_lung;
+      partToHighlight = "left_lung";
+    } else if (question.includes("phổi trái") || question.includes("phoi trai")) {
+      response = bioData.left_lung;
+      partToHighlight = "left_lung";
+    } else if (question.includes("phổi phải") || question.includes("phoi phai")) {
+      response = bioData.right_lung;
+      partToHighlight = "right_lung";
+    } else if (question.includes("thế năng") || question.includes("the nang")) {
+      response = "Thế năng (U) là năng lượng mà vật có được do vị trí của nó trong trường trọng lực. Công thức: U = m · g · h.";
+    } else if (question.includes("động năng") || question.includes("dong nang")) {
+      response = "Động năng (K) là năng lượng mà vật có được do chuyển động của nó. Công thức: K = ½ · m · v².";
+    }
+    
+    // Adjust response based on AI level
+    if (aiLevel === 'junior') {
+      response = response.split('.')[0] + '.'; // Shorten to first sentence
+    } else if (aiLevel === 'expert') {
+      response += " (Thông tin chuyên sâu: Đây là một phần của hệ thần kinh trung ương, chịu trách nhiệm cho các chức năng nhận thức và điều khiển cơ thể.)";
+    }
+  }
+  // English questions
+  else if (lang === 'en') {
+    if (question.includes("brain") || question.includes("cortex") || question.includes("cerebellum") || question.includes("brainstem")) {
+      response = bioData.cortex + " " + bioData.cerebellum + " " + bioData.brainstem;
+      partToHighlight = "cortex";
+    } else if (question.includes("cortex")) {
+      response = bioData.cortex;
+      partToHighlight = "cortex";
+    } else if (question.includes("cerebellum")) {
+      response = bioData.cerebellum;
+      partToHighlight = "cerebellum";
+    } else if (question.includes("brainstem")) {
+      response = bioData.brainstem;
+      partToHighlight = "brainstem";
+    } else if (question.includes("heart")) {
+      response = bioData.tim + " " + bioData.atria + " " + bioData.ventricles;
+      partToHighlight = "atria";
+    } else if (question.includes("atria")) {
+      response = bioData.atria;
+      partToHighlight = "atria";
+    } else if (question.includes("ventricles")) {
+      response = bioData.ventricles;
+      partToHighlight = "ventricles";
+    } else if (question.includes("lung")) {
+      response = bioData.phoi + " " + bioData.left_lung + " " + bioData.right_lung;
+      partToHighlight = "left_lung";
+    } else if (question.includes("left lung")) {
+      response = bioData.left_lung;
+      partToHighlight = "left_lung";
+    } else if (question.includes("right lung")) {
+      response = bioData.right_lung;
+      partToHighlight = "right_lung";
+    } else if (question.includes("potential") || question.includes("potential energy")) {
+      response = "Potential energy (U) is the energy an object has due to its position in a gravitational field. Formula: U = m · g · h.";
+    } else if (question.includes("kinetic") || question.includes("kinetic energy")) {
+      response = "Kinetic energy (K) is the energy an object has due to its motion. Formula: K = ½ · m · v².";
+    }
+    
+    // Adjust response based on AI level
+    if (aiLevel === 'junior') {
+      response = response.split('.')[0] + '.'; // Shorten to first sentence
+    } else if (aiLevel === 'expert') {
+      response += " (Advanced info: This is part of the central nervous system, responsible for cognitive functions and bodily control.)";
+    }
+  }
+
+  if (partToHighlight && currentMode === "default") {
+    highlightPart(partToHighlight);
+  }
+  return response;
 }
 
 function startApp() {
@@ -1568,6 +2682,10 @@ function startApp() {
     animate();
     setMode('default');
     appRoot.style.visibility = 'visible';
+    
+    // Apply saved language preference
+    const savedLanguage = localStorage.getItem('preferredLanguage') || 'vi';
+    changeLanguage(savedLanguage);
   } catch (e) {
     console.error("Lỗi khi khởi tạo app:", e);
   }
